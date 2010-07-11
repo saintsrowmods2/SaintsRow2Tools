@@ -112,7 +112,8 @@ namespace Gibbed.SaintsRow2.ExtractPackage
 			long succeeded, failed, current;
 			ExtractThreadInfo info = (ExtractThreadInfo)oinfo;
 
-			Stream input = File.OpenRead(info.Path);
+            FileStream inputfs = new FileStream(info.Path, FileMode.Open, FileAccess.Read, FileShare.Read);
+            Stream input = inputfs as Stream;
 
 			succeeded = failed = current = 0;
 
@@ -127,7 +128,8 @@ namespace Gibbed.SaintsRow2.ExtractPackage
 				string outputName = entry.Name + "." + entry.Extension;
 				this.Log(outputName);
 
-				Stream output = File.OpenWrite(Path.Combine(info.Save, outputName));
+                FileStream outputfs = new FileStream(Path.Combine(info.Save, outputName), FileMode.Create, FileAccess.Write, FileShare.None);
+                Stream output = outputfs as Stream;
 
 				if (entry.CompressedSize == -1)
 				{
