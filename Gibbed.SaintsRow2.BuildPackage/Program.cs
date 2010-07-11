@@ -19,6 +19,8 @@ namespace Gibbed.SaintsRow2.BuildPackage
 			if (args.Length < 2)
 			{
 				Console.WriteLine("{0} <package.vpp_pc> <directory> [<directory>[, <directory>[, ...]]]", Path.GetFileName(Application.ExecutablePath));
+                Console.WriteLine("Typically:");
+                Console.WriteLine(@"{0} patch.vpp_pc modified extracted\patch", Path.GetFileName(Application.ExecutablePath));
 				return;
 			}
 

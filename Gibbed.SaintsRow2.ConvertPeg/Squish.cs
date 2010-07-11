@@ -4,6 +4,8 @@ namespace Gibbed.SaintsRow2.ConvertPeg
 {
 	public class Squish
 	{
+        // See http://code.google.com/p/libsquish/
+
 		public enum Flags
 		{
 			DXT1 = (1 << 0),
