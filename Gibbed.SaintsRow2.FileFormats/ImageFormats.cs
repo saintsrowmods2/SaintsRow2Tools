@@ -30,9 +30,9 @@ namespace Gibbed.SaintsRow2.FileFormats
             internal static extern void DecompressImage([MarshalAs(UnmanagedType.LPArray)] byte[] rgba, uint width, uint height, [MarshalAs(UnmanagedType.LPArray)] byte[] blocks, int flags);
         }
 
-        public static byte[] Compress(byte[] decompressed, uint width, uint height, PegFormat format)
+        public static byte[] Compress(byte[] decompressed, uint width, uint height, PegFormat format, uint compressionFactor)
         {
-            byte[] compressed = new byte[decompressed.Length / 8];
+            byte[] compressed = new byte[decompressed.Length / compressionFactor];
             
             Flags flags = 0;
             if (format == PegFormat.DXT1)

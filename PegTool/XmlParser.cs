@@ -142,6 +142,9 @@ namespace PegTool
                                 case "Unknown18":
                                     uint.TryParse(node.InnerText, out frame.Unknown18);
                                     break;
+                                case "Size":
+                                    uint.TryParse(node.InnerText, out frame.Size);
+                                    break;
                                 case "Unknown20":
                                     uint.TryParse(node.InnerText, out frame.Unknown20);
                                     break;

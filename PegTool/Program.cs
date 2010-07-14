@@ -32,6 +32,10 @@ namespace PegTool
             }
             else
                 Usage();
+
+#if DEBUG
+            Console.ReadLine();
+#endif
         }
 
         public static void Usage()
@@ -133,7 +137,7 @@ namespace PegTool
                     writer.WriteElementString("Unknown12", frame.Unknown12.ToString());
                     writer.WriteElementString("Unknown14", frame.Unknown14.ToString());
                     writer.WriteElementString("Unknown18", frame.Unknown18.ToString());
-                    //writer.WriteElementString("Size", frame.Size.ToString("X8"));
+                    writer.WriteElementString("Size", frame.Size.ToString());
                     writer.WriteElementString("Unknown20", frame.Unknown20.ToString());
                     writer.WriteElementString("Unknown24", frame.Unknown24.ToString());
                     writer.WriteElementString("Unknown28", frame.Unknown28.ToString());
@@ -203,6 +207,13 @@ namespace PegTool
                 return;
             }
 
+            string extension = Path.GetExtension(descFilePath);
+            if (!(extension == ".peg_desc"))
+            {
+                Console.WriteLine("File is not a peg_desc file: {0}", descFilePath);
+                return;
+            }
+
             string descFolder = Path.GetDirectoryName(descFilePath);
             Console.Write("Loading Peg Description... ");
             PegFile pegFile = XmlParser.ParseFile(descFilePath);
@@ -252,10 +263,11 @@ namespace PegTool
                             g.Dispose();
                             bitmapData = outBitmap.LockBits(lockArea, ImageLockMode.ReadOnly, outBitmap.PixelFormat);
                             rawData = new byte[srcBitmap.Width * srcBitmap.Height * 4];
+                            uint compressionFactor = (uint)(rawData.Length / frame.Size);
                             Marshal.Copy(bitmapData.Scan0, rawData, 0, rawData.Length);
                             outBitmap.UnlockBits(bitmapData);
                             ImageFormats.SwapRedAndBlue((uint)srcBitmap.Width, (uint)srcBitmap.Height, ref rawData);
-                            rawData = ImageFormats.Compress(rawData, (uint)srcBitmap.Width, (uint)srcBitmap.Height, format);
+                            rawData = ImageFormats.Compress(rawData, (uint)srcBitmap.Width, (uint)srcBitmap.Height, format, compressionFactor);
                             break;
 
                         case PegFormat.A8R8G8B8:
