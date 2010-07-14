@@ -1,3 +1,7 @@
+PegTool and Gibbed.SaintsRow2 changes:
+	PegTool is Copyright (c) 2010 Thomas Jepp (tom@tomjepp.co.uk).
+	Changes to Gibbed.SaintsRow2 are Copyright (c) 2010 Thomas Jepp (tom@tomjepp.co.uk).
+
 ICSharpCode.SharpZipLib license: http://www.icsharpcode.net/opensource/sharpziplib/
 GNU GPL: http://www.gnu.org/licenses/gpl.html
 	License
@@ -61,10 +65,8 @@ Squish library license: http://code.google.com/p/libsquish/source/browse/trunk/R
         permit persons to whom the Software is furnished to do so, subject to 
         the following conditions:
 
-
         The above copyright notice and this permission notice shall be included
         in all copies or substantial portions of the Software.
-
 
         THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
         OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF 
