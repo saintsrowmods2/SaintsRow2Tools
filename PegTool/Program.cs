@@ -233,7 +233,7 @@ namespace PegTool
             }
             Console.WriteLine("done.");
 
-            Console.WriteLine("Performing colour space conversions and compressing data:");
+            Console.WriteLine("Loading texture data, performing colour space conversions and compressing data:");
             Dictionary<PegFrame, byte[]> rawFrameData = new Dictionary<PegFrame,byte[]>();
 
             uint totalSize = 0;
@@ -331,6 +331,7 @@ namespace PegTool
 
                         outBitmap.Dispose();
                         srcBitmap.Dispose();
+                        Console.WriteLine("done.");
                     }
                     frame.Size = (uint)rawData.Length;
                     totalSize += frame.Size;
@@ -345,7 +346,7 @@ namespace PegTool
                 }
             }
             pegFile.DataFileSize = totalSize;
-            Console.WriteLine("done.");
+            Console.WriteLine("Finished loading texture data.");
 
             Console.Write("Writing peg_pc and g_peg_pc files...");
             string pegFilePath = Path.ChangeExtension(descFilePath, "peg_pc");
