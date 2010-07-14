@@ -66,7 +66,7 @@ namespace Gibbed.SaintsRow2.ConvertPeg
 			Stream header = File.OpenRead(pegName);
 			Stream data = File.OpenRead(gpegName);
 
-			FileFormats.PegFile peg = new FileFormats.PegFile();
+			FileFormats.PegFile peg = new FileFormats.PegFile(false);
 			peg.Read(header);
 
 			foreach (FileFormats.PegEntry entry in peg.Entries)
@@ -87,23 +87,22 @@ namespace Gibbed.SaintsRow2.ConvertPeg
 						format == FileFormats.PegFormat.DXT3 ||
 						format == FileFormats.PegFormat.DXT5)
 					{
-						Squish.Flags flags = 0;
+						FileFormats.ImageFormats.Flags flags = 0;
 
 						if (format == FileFormats.PegFormat.DXT1)
 						{
-							flags |= Squish.Flags.DXT1;
+                            flags |= FileFormats.ImageFormats.Flags.DXT1;
 						}
 						else if (format == FileFormats.PegFormat.DXT3)
 						{
-							flags |= Squish.Flags.DXT3;
+                            flags |= FileFormats.ImageFormats.Flags.DXT3;
 						}
 						else if (format == FileFormats.PegFormat.DXT5)
 						{
-							flags |= Squish.Flags.DXT5;
+                            flags |= FileFormats.ImageFormats.Flags.DXT5;
 						}
 
-						byte[] decompressed = new byte[frame.Width * frame.Height * 4];
-						Squish.Decompress(decompressed, frame.Width, frame.Height, compressed, (int)flags);
+						byte[] decompressed = FileFormats.ImageFormats.Decompress(compressed, frame.Width, frame.Height, format);
 						bitmap = MakeBitmapFromDXT(frame.Width, frame.Height, decompressed, true);
 					}
 					// R5G6B5

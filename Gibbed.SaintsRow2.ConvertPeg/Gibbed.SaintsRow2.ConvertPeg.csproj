@@ -72,7 +72,6 @@
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Squish.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Gibbed.SaintsRow2.FileFormats\Gibbed.SaintsRow2.FileFormats.csproj">

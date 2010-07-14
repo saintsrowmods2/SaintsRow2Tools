@@ -7,17 +7,17 @@ namespace Gibbed.SaintsRow2.FileFormats
 	public enum PegFormat
 	{
 		Unknown = 0,
-		DXT1 = 400,
-		DXT3 = 401,
-		DXT5 = 402,
-		R5G6B5 = 403,
-		A1R5G5B5 = 404,
-		A4R4G4B4 = 405,
-		R8G8B8 = 406,
-		A8R8G8B8 = 407,
-		V8U8 = 408,
-		CxV8U8 = 409,
-		A8 = 410,
+		DXT1 = 0x0190,
+		DXT3 = 0x0191,
+		DXT5 = 0x0192,
+		R5G6B5 = 0x0193,
+		A1R5G5B5 = 0x0194,
+		A4R4G4B4 = 0x0195,
+		R8G8B8 = 0x0196,
+		A8R8G8B8 = 0x0197,
+		V8U8 = 0x0198,
+		CxV8U8 = 0x0199,
+		A8 = 0x019A,
 	}
 
 	public class PegEntry
@@ -54,7 +54,10 @@ namespace Gibbed.SaintsRow2.FileFormats
 		 * 410		D3DFMT_A8
 		 */
 		[FieldOffset(0x08)]
-		public UInt32 Format;
+		public UInt16 Format;
+
+        [FieldOffset(0x0A)]
+        public UInt16 Unknown0A;
 
 		[FieldOffset(0x0C)]
 		public UInt32 Unknown0C;

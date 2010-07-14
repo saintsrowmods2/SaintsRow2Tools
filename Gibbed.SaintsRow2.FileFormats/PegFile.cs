@@ -10,43 +10,73 @@ namespace Gibbed.SaintsRow2.FileFormats
 		public List<PegEntry> Entries = new List<PegEntry>();
 
 		public UInt32 FileSize;
-		public UInt32 Unknown0C;
+		public UInt32 DataFileSize;
+        public UInt16 Unknown06;
 		public UInt16 Unknown12;
-		public UInt32 Unknown16;
+		public UInt16 Unknown16;
+
+        public bool BigEndian = false;
+
+        public PegFile(bool bigEndian)
+        {
+            BigEndian = bigEndian;
+        }
 
 		public PegFrame ReadFrame(Stream stream)
 		{
 			byte[] data = new byte[0x30];
 			stream.Read(data, 0, 0x30);
-			return (PegFrame)data.BytesToStructure(typeof(PegFrame));
+            PegFrame frame = (PegFrame)data.BytesToStructure(typeof(PegFrame));
+            if (BigEndian)
+            {
+                frame.Offset = frame.Offset.Swap();
+                frame.Width = frame.Width.Swap();
+                frame.Height = frame.Height.Swap();
+                frame.Format = frame.Format.Swap();
+                frame.Unknown0A = frame.Unknown0A.Swap();
+                //frame.Format = (ushort)frame.Format;
+                frame.Unknown0C = frame.Unknown0C.Swap();
+                frame.Frames = frame.Frames.Swap();
+                frame.Unknown12 = frame.Unknown12.Swap();
+                frame.Unknown14 = frame.Unknown14.Swap();
+                frame.Unknown18 = frame.Unknown18.Swap();
+                frame.Size = frame.Size.Swap();
+                frame.Unknown20 = frame.Unknown20.Swap();
+                frame.Unknown24 = frame.Unknown24.Swap();
+                frame.Unknown28 = frame.Unknown28.Swap();
+                frame.Unknown2C = frame.Unknown2C.Swap();
+            }
+            return frame;
 		}
 
 		public void Read(Stream stream)
 		{
 			this.Entries.Clear();
 
-			if (stream.ReadU32() != 0x564B4547)
+            uint magic = BigEndian ? stream.ReadU32BE() : stream.ReadU32(); // 00
+			if (magic != 0x564B4547)
 			{
 				throw new NotAPegFileException("header must be GEKV");
 			}
 
-			if (stream.ReadU32() != 10)
+            ushort version = BigEndian ? stream.ReadU16BE() : stream.ReadU16(); // 04
+			if (version != 10)
 			{
 				throw new UnsupportedPackageFileVersionException("only version 10 is supported");
 			}
 
-			this.FileSize = stream.ReadU32();
-
+            Unknown06 =  BigEndian ? stream.ReadU16BE() : stream.ReadU16(); // 06
+			this.FileSize = BigEndian ? stream.ReadU32BE() : stream.ReadU32(); // 08
 			if (stream.Length != this.FileSize)
 			{
 				throw new PegFileException("size of file does not match size in header");
 			}
 
-			this.Unknown0C = stream.ReadU32();
-			int entryCount = stream.ReadU16();
-			this.Unknown12 = stream.ReadU16();
-			int frameCount = stream.ReadU16();
-			this.Unknown16 = stream.ReadU16();
+            this.DataFileSize = BigEndian ? stream.ReadU32BE() : stream.ReadU32(); // 0C
+			ushort entryCount = BigEndian ? stream.ReadU16BE() : stream.ReadU16(); // 10
+            this.Unknown12 = BigEndian ? stream.ReadU16BE() : stream.ReadU16(); // 12
+            ushort frameCount = BigEndian ? stream.ReadU16BE() : stream.ReadU16(); ; // 14
+            this.Unknown16 = BigEndian ? stream.ReadU16BE() : stream.ReadU16(); ; // 16
 
 			// Read names
 			string[] names = new string[entryCount];
