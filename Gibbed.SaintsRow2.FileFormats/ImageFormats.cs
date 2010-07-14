@@ -30,9 +30,9 @@ namespace Gibbed.SaintsRow2.FileFormats
             internal static extern void DecompressImage([MarshalAs(UnmanagedType.LPArray)] byte[] rgba, uint width, uint height, [MarshalAs(UnmanagedType.LPArray)] byte[] blocks, int flags);
         }
 
-        public static byte[] Compress(byte[] decompressed, uint width, uint height, PegFormat format, uint compressionFactor)
+        public static byte[] Compress(byte[] decompressed, uint width, uint height, PegFormat format, uint compressedSize)
         {
-            byte[] compressed = new byte[decompressed.Length / compressionFactor];
+            byte[] compressed = new byte[compressedSize];
             
             Flags flags = 0;
             if (format == PegFormat.DXT1)
@@ -41,6 +41,8 @@ namespace Gibbed.SaintsRow2.FileFormats
                 flags |= Flags.DXT3;
             else if (format == PegFormat.DXT5)
                 flags |= Flags.DXT5;
+
+            flags |= Flags.ColourMetricUniform | Flags.ColourIterativeClusterFit;
 
             NativeMethods.CompressImage(decompressed, width, height, compressed, (int)flags);
 
@@ -84,6 +86,23 @@ namespace Gibbed.SaintsRow2.FileFormats
             BitmapData data = bitmap.LockBits(area, ImageLockMode.WriteOnly, bitmap.PixelFormat);
             Marshal.Copy(buffer, 0, data.Scan0, (int)(width * height * 4));
             bitmap.UnlockBits(data);
+
+            /*if (!keepAlpha)
+            {
+                for (int x = 0; x < bitmap.Width; x++)
+                {
+                    for (int y = 0; y < bitmap.Height; y++)
+                    {
+                        Color c = bitmap.GetPixel(x, y);
+                        //if (c.B == 0 && c.G == 0 && c.R == 0)
+                        //{
+                            Color newColor = Color.FromArgb(127, c);
+                            bitmap.SetPixel(x, y, newColor);
+                        //}
+                    }
+                }
+            }*/
+            
             return bitmap;
         }
 

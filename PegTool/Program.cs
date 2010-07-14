@@ -106,14 +106,14 @@ namespace PegTool
             writer.WriteElementString("Magic", "GEKV");
             writer.WriteElementString("Version", "10");
             writer.WriteElementString("Unknown06", pegFile.Unknown06.ToString());
-            //writer.WriteElementString("FileSize", pegFile.FileSize.ToString("X8"));
-            //writer.WriteElementString("DataFileSize", pegFile.DataFileSize.ToString("X8"));
-            //writer.WriteElementString("EntryCount", pegFile.Entries.Count.ToString("X4"));
+            writer.WriteElementString("FileSize", pegFile.FileSize.ToString());
+            writer.WriteElementString("DataFileSize", pegFile.DataFileSize.ToString());
+            writer.WriteElementString("EntryCount", pegFile.Entries.Count.ToString());
             writer.WriteElementString("Unknown12", pegFile.Unknown12.ToString());
             int frameCount = 0;
             foreach (PegEntry entry in pegFile.Entries)
                 frameCount += entry.Frames.Count;
-            //writer.WriteElementString("FrameCount", frameCount.ToString("X4"));
+            writer.WriteElementString("FrameCount", frameCount.ToString());
             writer.WriteElementString("Unknown16", pegFile.Unknown16.ToString());
 
             writer.WriteStartElement("Entries");
@@ -126,17 +126,17 @@ namespace PegTool
                 foreach (PegFrame frame in entry.Frames)
                 {
                     writer.WriteStartElement("Frame");
-                    //writer.WriteElementString("Offset", frame.Offset.ToString("X8"));
+                    writer.WriteElementString("Offset", frame.Offset.ToString());
                     writer.WriteElementString("Width", frame.Width.ToString());
                     writer.WriteElementString("Height", frame.Height.ToString());
                     PegFormat frameFormat = (PegFormat)frame.Format;
                     writer.WriteElementString("Format", frameFormat.ToString());
                     writer.WriteElementString("Unknown0A", frame.Unknown0A.ToString());
                     writer.WriteElementString("Unknown0C", frame.Unknown0C.ToString());
-                    //writer.WriteElementString("Frames", frame.Frames.ToString("X4"));
+                    writer.WriteElementString("Frames", frame.Frames.ToString());
                     writer.WriteElementString("Unknown12", frame.Unknown12.ToString());
-                    writer.WriteElementString("Unknown14", frame.Unknown14.ToString());
-                    writer.WriteElementString("Unknown18", frame.Unknown18.ToString());
+                    writer.WriteElementString("Unknown16", frame.Unknown16.ToString());
+                    writer.WriteElementString("UnknownFlags1A", frame.UnknownFlags1A.ToString("X4"));
                     writer.WriteElementString("Size", frame.Size.ToString());
                     writer.WriteElementString("Unknown20", frame.Unknown20.ToString());
                     writer.WriteElementString("Unknown24", frame.Unknown24.ToString());
@@ -161,6 +161,7 @@ namespace PegTool
                 for (int i = 0; i < entry.Frames.Count; i++)
                 {
                     string filePath = Path.Combine(path, String.Format("{0}_{1}.png", entry.Name, i));
+                    string rawFilePath = Path.Combine(path, String.Format("{0}_{1}.raw", entry.Name, i));
                     Console.Write(" - Extracting {0}... ", filePath);
 
                     PegFrame frame = entry.Frames[i];
@@ -169,6 +170,11 @@ namespace PegTool
                     pegDataFileStream.Read(rawData, 0, (int)frame.Size);
 
                     PegFormat format = (PegFormat)frame.Format;
+
+                    FileStream rawFileStream = new FileStream(rawFilePath, FileMode.Create, FileAccess.Write, FileShare.None);
+                    rawFileStream.Write(rawData, 0, rawData.Length);
+                    rawFileStream.Flush();
+                    rawFileStream.Close();
 
                     Bitmap bitmap = null;
 
@@ -181,6 +187,9 @@ namespace PegTool
                             bitmap = ImageFormats.MakeBitmapFromR5G6B5(frame.Width, frame.Height, rawData);
                             break;
                         case PegFormat.DXT1:
+                            byte[] decompressedDXT1 = ImageFormats.Decompress(rawData, frame.Width, frame.Height, format);
+                            bitmap = ImageFormats.MakeBitmapFromDXT(frame.Width, frame.Height, decompressedDXT1, false);
+                            break;
                         case PegFormat.DXT3:
                         case PegFormat.DXT5:
                             byte[] decompressed = ImageFormats.Decompress(rawData, frame.Width, frame.Height, format);
@@ -224,7 +233,7 @@ namespace PegTool
             }
             Console.WriteLine("done.");
 
-            Console.Write("Performing colour space conversions and compressing data...");
+            Console.WriteLine("Performing colour space conversions and compressing data:");
             Dictionary<PegFrame, byte[]> rawFrameData = new Dictionary<PegFrame,byte[]>();
 
             uint totalSize = 0;
@@ -234,71 +243,102 @@ namespace PegTool
                 for (int i = 0; i < entry.Frames.Count; i++)
                 {
                     PegFrame frame = entry.Frames[i];
+                    Console.Write(" - {0} (frame {1})... ", entry.Name, i);
                     frame.Frames = (ushort)((i == 0) ? entry.Frames.Count : 1);
                     frame.Offset = totalSize;
                     PegFormat format = (PegFormat)frame.Format;
                     byte[] rawData = null;
+
+                    string rawFilePath = Path.Combine(descFolder, String.Format("{0}_{1}.raw", entry.Name, i));
                     string filePath = Path.Combine(descFolder, String.Format("{0}_{1}.png", entry.Name, i));
 
-                    if (!File.Exists(filePath))
+                    if (File.Exists(rawFilePath))
                     {
-                        Console.WriteLine("Unable to find file: {0}", filePath);
-                        Console.WriteLine("Make sure all your texture files are in the correct location and correctly named.");
-                        return;
+                        Console.Write("loading from {0}... ", rawFilePath);
+                        FileStream rawFileStream = new FileStream(rawFilePath, FileMode.Open, FileAccess.Read, FileShare.None);
+                        rawData = new byte[rawFileStream.Length];
+                        rawFileStream.Read(rawData, 0, rawData.Length);
+                        rawFileStream.Close();
+                        Console.WriteLine("done.");
                     }
-
-                    Bitmap srcBitmap = new Bitmap(filePath);
-                    Rectangle lockArea = new Rectangle(0, 0, srcBitmap.Width, srcBitmap.Height);
-                    Bitmap outBitmap = null;
-                    BitmapData bitmapData = null;
-                    Graphics g = null;
-                    switch (format)
+                    else
                     {
-                        case PegFormat.DXT1:
-                        case PegFormat.DXT3:
-                        case PegFormat.DXT5:
-                            outBitmap = new Bitmap(srcBitmap.Width, srcBitmap.Height, PixelFormat.Format32bppArgb);
+                        Console.Write("importing from {0}... ", filePath);
+                        if (!File.Exists(filePath))
+                        {
+                            Console.WriteLine("Unable to find file: {0}", filePath);
+                            Console.WriteLine("Make sure all your texture files are in the correct location and correctly named.");
+                            return;
+                        }
+
+                        Bitmap srcBitmap = new Bitmap(filePath);
+                        Rectangle lockArea = new Rectangle(0, 0, srcBitmap.Width, srcBitmap.Height);
+                        Bitmap outBitmap = null;
+                        BitmapData bitmapData = null;
+                        Graphics g = null;
+                        switch (format)
+                        {
+                            case PegFormat.DXT1:
+                            /*outBitmap = new Bitmap(srcBitmap.Width, srcBitmap.Height, PixelFormat.Format32bppArgb);
                             g = Graphics.FromImage(outBitmap);
                             g.DrawImage(srcBitmap, 0, 0);
                             g.Dispose();
                             bitmapData = outBitmap.LockBits(lockArea, ImageLockMode.ReadOnly, outBitmap.PixelFormat);
                             rawData = new byte[srcBitmap.Width * srcBitmap.Height * 4];
-                            uint compressionFactor = (uint)(rawData.Length / frame.Size);
                             Marshal.Copy(bitmapData.Scan0, rawData, 0, rawData.Length);
                             outBitmap.UnlockBits(bitmapData);
                             ImageFormats.SwapRedAndBlue((uint)srcBitmap.Width, (uint)srcBitmap.Height, ref rawData);
-                            rawData = ImageFormats.Compress(rawData, (uint)srcBitmap.Width, (uint)srcBitmap.Height, format, compressionFactor);
-                            break;
+                            rawData = ImageFormats.Compress(rawData, (uint)srcBitmap.Width, (uint)srcBitmap.Height, format, frame.Size);
+                            break;*/
 
-                        case PegFormat.A8R8G8B8:
-                            outBitmap = new Bitmap(srcBitmap.Width, srcBitmap.Height, PixelFormat.Format32bppArgb);
-                            g = Graphics.FromImage(outBitmap);
-                            g.DrawImage(srcBitmap, 0, 0);
-                            g.Dispose();
-                            bitmapData = outBitmap.LockBits(lockArea, ImageLockMode.ReadOnly, outBitmap.PixelFormat);
-                            rawData = new byte[srcBitmap.Width * srcBitmap.Height * 4];
-                            Marshal.Copy(bitmapData.Scan0, rawData, 0, rawData.Length);
-                            outBitmap.UnlockBits(bitmapData);
-                            break;
-                        case PegFormat.R5G6B5:
-                            outBitmap = new Bitmap(srcBitmap.Width, srcBitmap.Height, PixelFormat.Format16bppRgb565);
-                            g = Graphics.FromImage(outBitmap);
-                            g.DrawImage(srcBitmap, 0, 0);
-                            g.Dispose();
-                            bitmapData = outBitmap.LockBits(lockArea, ImageLockMode.ReadOnly, outBitmap.PixelFormat);
-                            rawData = new byte[srcBitmap.Width * srcBitmap.Height * 2];
-                            Marshal.Copy(bitmapData.Scan0, rawData, 0, rawData.Length);
-                            outBitmap.UnlockBits(bitmapData);
-                            break;
-                        default:
-                            throw new Exception("Unhandled format: " + format.ToString());
+                            case PegFormat.DXT3:
+                            case PegFormat.DXT5:
+                                outBitmap = new Bitmap(srcBitmap.Width, srcBitmap.Height, PixelFormat.Format32bppArgb);
+                                g = Graphics.FromImage(outBitmap);
+                                g.DrawImage(srcBitmap, 0, 0);
+                                g.Dispose();
+                                bitmapData = outBitmap.LockBits(lockArea, ImageLockMode.ReadOnly, outBitmap.PixelFormat);
+                                rawData = new byte[srcBitmap.Width * srcBitmap.Height * 4];
+                                Marshal.Copy(bitmapData.Scan0, rawData, 0, rawData.Length);
+                                outBitmap.UnlockBits(bitmapData);
+                                ImageFormats.SwapRedAndBlue((uint)srcBitmap.Width, (uint)srcBitmap.Height, ref rawData);
+                                rawData = ImageFormats.Compress(rawData, (uint)srcBitmap.Width, (uint)srcBitmap.Height, format, frame.Size);
+                                break;
+
+                            case PegFormat.A8R8G8B8:
+                                outBitmap = new Bitmap(srcBitmap.Width, srcBitmap.Height, PixelFormat.Format32bppArgb);
+                                g = Graphics.FromImage(outBitmap);
+                                g.DrawImage(srcBitmap, 0, 0);
+                                g.Dispose();
+                                bitmapData = outBitmap.LockBits(lockArea, ImageLockMode.ReadOnly, outBitmap.PixelFormat);
+                                rawData = new byte[srcBitmap.Width * srcBitmap.Height * 4];
+                                Marshal.Copy(bitmapData.Scan0, rawData, 0, rawData.Length);
+                                outBitmap.UnlockBits(bitmapData);
+                                break;
+                            case PegFormat.R5G6B5:
+                                outBitmap = new Bitmap(srcBitmap.Width, srcBitmap.Height, PixelFormat.Format16bppRgb565);
+                                g = Graphics.FromImage(outBitmap);
+                                g.DrawImage(srcBitmap, 0, 0);
+                                g.Dispose();
+                                bitmapData = outBitmap.LockBits(lockArea, ImageLockMode.ReadOnly, outBitmap.PixelFormat);
+                                rawData = new byte[srcBitmap.Width * srcBitmap.Height * 2];
+                                Marshal.Copy(bitmapData.Scan0, rawData, 0, rawData.Length);
+                                outBitmap.UnlockBits(bitmapData);
+                                break;
+                            default:
+                                throw new Exception("Unhandled format: " + format.ToString());
+                        }
+
+                        outBitmap.Dispose();
+                        srcBitmap.Dispose();
                     }
-
-                    outBitmap.Dispose();
-                    srcBitmap.Dispose();
-
                     frame.Size = (uint)rawData.Length;
                     totalSize += frame.Size;
+                    if (totalSize % 16 != 0)
+                    {
+                        uint difference = (uint)(Math.Ceiling((float)totalSize / 16f) * 16) - totalSize;
+                        totalSize += difference;
+                    }
                     totalFrames ++;
                     entry.Frames[i] = frame;
                     rawFrameData.Add(frame, rawData);

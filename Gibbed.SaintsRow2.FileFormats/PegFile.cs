@@ -38,8 +38,8 @@ namespace Gibbed.SaintsRow2.FileFormats
                 frame.Unknown0C = frame.Unknown0C.Swap();
                 frame.Frames = frame.Frames.Swap();
                 frame.Unknown12 = frame.Unknown12.Swap();
-                frame.Unknown14 = frame.Unknown14.Swap();
-                frame.Unknown18 = frame.Unknown18.Swap();
+                frame.Unknown16 = frame.Unknown16.Swap();
+                frame.UnknownFlags1A = frame.UnknownFlags1A.Swap();
                 frame.Size = frame.Size.Swap();
                 frame.Unknown20 = frame.Unknown20.Swap();
                 frame.Unknown24 = frame.Unknown24.Swap();

@@ -66,13 +66,13 @@ namespace Gibbed.SaintsRow2.FileFormats
 		public UInt16 Frames;
 
 		[FieldOffset(0x12)]
-		public UInt16 Unknown12;
+		public UInt32 Unknown12;
 
-		[FieldOffset(0x14)]
-		public UInt32 Unknown14; // used for a pointer to the string by game
+		[FieldOffset(0x16)]
+		public UInt32 Unknown16; // used for a pointer to the string by game
 
-		[FieldOffset(0x18)]
-		public UInt32 Unknown18;
+		[FieldOffset(0x1A)]
+		public UInt16 UnknownFlags1A;
 
 		[FieldOffset(0x1C)]
 		public UInt32 Size;

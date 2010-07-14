@@ -68,6 +68,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DXTDecompressor.cs" />
     <Compile Include="Exceptions.cs" />
     <Compile Include="LeStringsFile.cs" />
     <Compile Include="PackageFile.cs" />

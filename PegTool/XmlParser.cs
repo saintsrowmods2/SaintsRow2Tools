@@ -67,8 +67,8 @@ namespace PegTool
                     case "Entries":
                         ParseEntries(node, pegFile);
                         break;
-                    default:
-                        throw new Exception(String.Format("Encountered unknown XML element: {0}", node.Name));
+                    //default:
+                        //throw new Exception(String.Format("Encountered unknown XML element: {0}", node.Name));
                 }
             }
 
@@ -93,14 +93,14 @@ namespace PegTool
                                 case "Frames":
                                     ParseFrames(node, entry);
                                     break;
-                                default:
-                                    throw new Exception(String.Format("Encountered unknown XML element: {0}", node.Name));
+                                //default:
+                                    //throw new Exception(String.Format("Encountered unknown XML element: {0}", node.Name));
                             }
                         }
                         pegFile.Entries.Add(entry);
                         break;
-                    default:
-                        throw new Exception(String.Format("Encountered unknown XML element: {0}", entryNode.Name));
+                    //default:
+                        //throw new Exception(String.Format("Encountered unknown XML element: {0}", entryNode.Name));
                 }
             }
         }
@@ -134,13 +134,13 @@ namespace PegTool
                                     uint.TryParse(node.InnerText, out frame.Unknown0C);
                                     break;
                                 case "Unknown12":
-                                    ushort.TryParse(node.InnerText, out frame.Unknown12);
+                                    uint.TryParse(node.InnerText, out frame.Unknown12);
                                     break;
-                                case "Unknown14":
-                                    uint.TryParse(node.InnerText, out frame.Unknown14);
+                                case "Unknown16":
+                                    uint.TryParse(node.InnerText, out frame.Unknown16);
                                     break;
-                                case "Unknown18":
-                                    uint.TryParse(node.InnerText, out frame.Unknown18);
+                                case "UnknownFlags1A":
+                                    ushort.TryParse(node.InnerText, System.Globalization.NumberStyles.HexNumber, System.Globalization.CultureInfo.InvariantCulture, out frame.UnknownFlags1A);
                                     break;
                                 case "Size":
                                     uint.TryParse(node.InnerText, out frame.Size);
@@ -157,8 +157,8 @@ namespace PegTool
                                 case "Unknown2C":
                                     uint.TryParse(node.InnerText, out frame.Unknown2C);
                                     break;
-                                default:
-                                    throw new Exception(String.Format("Encountered unknown XML element: {0}", node.Name));
+                                //default:
+                                    //throw new Exception(String.Format("Encountered unknown XML element: {0}", node.Name));
                             }
                         }
                         entry.Frames.Add(frame);
