@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.SharpZLib", "IC
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PegTool", "PegTool\PegTool.csproj", "{9ACCCA0A-DA1C-4B79-9C85-BC2BE638D7C3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SaveEditor", "SaveEditor\SaveEditor.csproj", "{A10C8254-8BEC-4462-8659-94174E1DF29A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -111,6 +113,18 @@ Global
 		{9ACCCA0A-DA1C-4B79-9C85-BC2BE638D7C3}.Release|Win32.ActiveCfg = Release|x86
 		{9ACCCA0A-DA1C-4B79-9C85-BC2BE638D7C3}.Release|x86.ActiveCfg = Release|x86
 		{9ACCCA0A-DA1C-4B79-9C85-BC2BE638D7C3}.Release|x86.Build.0 = Release|x86
+		{A10C8254-8BEC-4462-8659-94174E1DF29A}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{A10C8254-8BEC-4462-8659-94174E1DF29A}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{A10C8254-8BEC-4462-8659-94174E1DF29A}.Debug|Mixed Platforms.Build.0 = Debug|x86
+		{A10C8254-8BEC-4462-8659-94174E1DF29A}.Debug|Win32.ActiveCfg = Debug|x86
+		{A10C8254-8BEC-4462-8659-94174E1DF29A}.Debug|x86.ActiveCfg = Debug|x86
+		{A10C8254-8BEC-4462-8659-94174E1DF29A}.Debug|x86.Build.0 = Debug|x86
+		{A10C8254-8BEC-4462-8659-94174E1DF29A}.Release|Any CPU.ActiveCfg = Release|x86
+		{A10C8254-8BEC-4462-8659-94174E1DF29A}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{A10C8254-8BEC-4462-8659-94174E1DF29A}.Release|Mixed Platforms.Build.0 = Release|x86
+		{A10C8254-8BEC-4462-8659-94174E1DF29A}.Release|Win32.ActiveCfg = Release|x86
+		{A10C8254-8BEC-4462-8659-94174E1DF29A}.Release|x86.ActiveCfg = Release|x86
+		{A10C8254-8BEC-4462-8659-94174E1DF29A}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
