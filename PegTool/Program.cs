@@ -295,7 +295,10 @@ namespace PegTool
                             case PegFormat.DXT5:
                                 outBitmap = new Bitmap(srcBitmap.Width, srcBitmap.Height, PixelFormat.Format32bppArgb);
                                 g = Graphics.FromImage(outBitmap);
-                                g.DrawImage(srcBitmap, 0, 0);
+                                g.CompositingMode = System.Drawing.Drawing2D.CompositingMode.SourceCopy;
+                                g.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality;
+                                g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.None;
+                                g.DrawImageUnscaled(srcBitmap, 0, 0);
                                 g.Dispose();
                                 bitmapData = outBitmap.LockBits(lockArea, ImageLockMode.ReadOnly, outBitmap.PixelFormat);
                                 rawData = new byte[srcBitmap.Width * srcBitmap.Height * 4];
@@ -306,19 +309,26 @@ namespace PegTool
                                 break;
 
                             case PegFormat.A8R8G8B8:
-                                outBitmap = new Bitmap(srcBitmap.Width, srcBitmap.Height, PixelFormat.Format32bppArgb);
+                                /*outBitmap = new Bitmap(srcBitmap.Width, srcBitmap.Height, PixelFormat.Format32bppArgb);
                                 g = Graphics.FromImage(outBitmap);
-                                g.DrawImage(srcBitmap, 0, 0);
-                                g.Dispose();
-                                bitmapData = outBitmap.LockBits(lockArea, ImageLockMode.ReadOnly, outBitmap.PixelFormat);
+                                g.CompositingMode = System.Drawing.Drawing2D.CompositingMode.SourceCopy;
+                                g.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.GammaCorrected;
+                                g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.None;
+                                g.DrawImageUnscaled(srcBitmap, 0, 0);
+                                g.Dispose();*/
+                                Console.WriteLine(srcBitmap.PixelFormat);
+                                bitmapData = srcBitmap.LockBits(lockArea, ImageLockMode.ReadOnly, srcBitmap.PixelFormat);
                                 rawData = new byte[srcBitmap.Width * srcBitmap.Height * 4];
                                 Marshal.Copy(bitmapData.Scan0, rawData, 0, rawData.Length);
-                                outBitmap.UnlockBits(bitmapData);
+                                srcBitmap.UnlockBits(bitmapData);
                                 break;
                             case PegFormat.R5G6B5:
                                 outBitmap = new Bitmap(srcBitmap.Width, srcBitmap.Height, PixelFormat.Format16bppRgb565);
                                 g = Graphics.FromImage(outBitmap);
-                                g.DrawImage(srcBitmap, 0, 0);
+                                g.CompositingMode = System.Drawing.Drawing2D.CompositingMode.SourceCopy;
+                                g.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality;
+                                g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.None;
+                                g.DrawImageUnscaled(srcBitmap, 0, 0);
                                 g.Dispose();
                                 bitmapData = outBitmap.LockBits(lockArea, ImageLockMode.ReadOnly, outBitmap.PixelFormat);
                                 rawData = new byte[srcBitmap.Width * srcBitmap.Height * 2];
@@ -329,7 +339,8 @@ namespace PegTool
                                 throw new Exception("Unhandled format: " + format.ToString());
                         }
 
-                        outBitmap.Dispose();
+                        if (outBitmap != null)
+                            outBitmap.Dispose();
                         srcBitmap.Dispose();
                         Console.WriteLine("done.");
                     }
