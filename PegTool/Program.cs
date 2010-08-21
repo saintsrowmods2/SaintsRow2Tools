@@ -273,85 +273,38 @@ namespace PegTool
                         }
 
                         Bitmap srcBitmap = new Bitmap(filePath);
-                        Rectangle lockArea = new Rectangle(0, 0, srcBitmap.Width, srcBitmap.Height);
-                        Bitmap outBitmap = null;
-                        BitmapData bitmapData = null;
-                        Graphics g = null;
                         switch (format)
                         {
                             case PegFormat.DXT1:
                             case PegFormat.DXT3:
                             case PegFormat.DXT5:
-                                outBitmap = new Bitmap(srcBitmap.Width, srcBitmap.Height, PixelFormat.Format32bppArgb);
-                                srcBitmap.SetResolution(96, 96);
-                                g = Graphics.FromImage(outBitmap);
-                                g.CompositingMode = System.Drawing.Drawing2D.CompositingMode.SourceCopy;
-                                g.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality;
-                                g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.None;
-                                g.DrawImage(srcBitmap, 0, 0, srcBitmap.Width, srcBitmap.Height);
-                                g.Dispose();
-                                bitmapData = outBitmap.LockBits(lockArea, ImageLockMode.ReadOnly, outBitmap.PixelFormat);
-                                rawData = new byte[srcBitmap.Width * srcBitmap.Height * 4];
-                                Marshal.Copy(bitmapData.Scan0, rawData, 0, rawData.Length);
-                                outBitmap.UnlockBits(bitmapData);
+                                rawData = GetRawA8R8G8B8DataFromBitmap(srcBitmap);
                                 ImageFormats.SwapRedAndBlue((uint)srcBitmap.Width, (uint)srcBitmap.Height, ref rawData);
                                 rawData = ImageFormats.Compress(rawData, (uint)srcBitmap.Width, (uint)srcBitmap.Height, format);
                                 break;
-
                             case PegFormat.A8R8G8B8:
-                                /*outBitmap = new Bitmap(srcBitmap.Width, srcBitmap.Height, PixelFormat.Format32bppArgb);
-                                g = Graphics.FromImage(outBitmap);
-                                g.CompositingMode = System.Drawing.Drawing2D.CompositingMode.SourceCopy;
-                                g.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.GammaCorrected;
-                                g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.None;
-                                g.DrawImageUnscaled(srcBitmap, 0, 0);
-                                g.Dispose();*/
-                                bitmapData = srcBitmap.LockBits(lockArea, ImageLockMode.ReadOnly, srcBitmap.PixelFormat);
-                                if (srcBitmap.PixelFormat == PixelFormat.Format24bppRgb)
-                                {
-                                    byte[] rgb = new byte[srcBitmap.Width * srcBitmap.Height * 3];
-                                    Marshal.Copy(bitmapData.Scan0, rgb, 0, rgb.Length);
-                                    srcBitmap.UnlockBits(bitmapData);
-                                    rawData = new byte[srcBitmap.Width * srcBitmap.Height * 4];
-                                    for (int pixel = 0; pixel < (rgb.Length / 3); pixel++)
-                                    {
-                                        int rgbOffset = pixel * 3;
-                                        int rawDataOffset = pixel * 4;
-                                        rawData[rawDataOffset] = rgb[rgbOffset];
-                                        rawData[rawDataOffset + 1] = rgb[rgbOffset + 1];
-                                        rawData[rawDataOffset + 2] = rgb[rgbOffset + 2];
-                                        rawData[rawDataOffset + 3] = 255;
-                                    }
-                                }
-                                else if (srcBitmap.PixelFormat == PixelFormat.Format32bppArgb)
-                                {
-                                    rawData = new byte[srcBitmap.Width * srcBitmap.Height * 4];
-                                    Marshal.Copy(bitmapData.Scan0, rawData, 0, rawData.Length);
-                                    srcBitmap.UnlockBits(bitmapData);
-                                }
-                                else
-                                    throw new Exception(String.Format("Unrecognised source Pixel Format: {0}", srcBitmap.PixelFormat));
+                                rawData = GetRawA8R8G8B8DataFromBitmap(srcBitmap);
                                 break;
                             case PegFormat.R5G6B5:
-                                outBitmap = new Bitmap(srcBitmap.Width, srcBitmap.Height, PixelFormat.Format16bppRgb565);
+                                Bitmap outBitmap = new Bitmap(srcBitmap.Width, srcBitmap.Height, PixelFormat.Format16bppRgb565);
                                 srcBitmap.SetResolution(96, 96);
-                                g = Graphics.FromImage(outBitmap);
+                                Graphics g = Graphics.FromImage(outBitmap);
                                 g.CompositingMode = System.Drawing.Drawing2D.CompositingMode.SourceCopy;
                                 g.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality;
                                 g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
                                 g.DrawImage(srcBitmap, 0, 0, srcBitmap.Width, srcBitmap.Height);
                                 g.Dispose();
-                                bitmapData = outBitmap.LockBits(lockArea, ImageLockMode.ReadOnly, outBitmap.PixelFormat);
+                                Rectangle lockArea = new Rectangle(0, 0, outBitmap.Width, outBitmap.Height);
+                                BitmapData bitmapData = outBitmap.LockBits(lockArea, ImageLockMode.ReadOnly, outBitmap.PixelFormat);
                                 rawData = new byte[srcBitmap.Width * srcBitmap.Height * 2];
                                 Marshal.Copy(bitmapData.Scan0, rawData, 0, rawData.Length);
                                 outBitmap.UnlockBits(bitmapData);
+                                outBitmap.Dispose();
                                 break;
                             default:
                                 throw new Exception("Unhandled format: " + format.ToString());
                         }
 
-                        if (outBitmap != null)
-                            outBitmap.Dispose();
                         srcBitmap.Dispose();
                         Console.WriteLine("done.");
                     }
@@ -438,6 +391,39 @@ namespace PegTool
             Marshal.Copy(ptr, arr, 0, len);
             Marshal.FreeHGlobal(ptr);
             return arr;
+        }
+
+        static byte[] GetRawA8R8G8B8DataFromBitmap(Bitmap srcBitmap)
+        {
+            byte[] rawData;
+            Rectangle lockArea = new Rectangle(0, 0, srcBitmap.Width, srcBitmap.Height);
+            BitmapData bitmapData = srcBitmap.LockBits(lockArea, ImageLockMode.ReadOnly, srcBitmap.PixelFormat);
+            if (srcBitmap.PixelFormat == PixelFormat.Format24bppRgb)
+            {
+                byte[] rgb = new byte[srcBitmap.Width * srcBitmap.Height * 3];
+                Marshal.Copy(bitmapData.Scan0, rgb, 0, rgb.Length);
+                srcBitmap.UnlockBits(bitmapData);
+                rawData = new byte[srcBitmap.Width * srcBitmap.Height * 4];
+                for (int pixel = 0; pixel < (rgb.Length / 3); pixel++)
+                {
+                    int rgbOffset = pixel * 3;
+                    int rawDataOffset = pixel * 4;
+                    rawData[rawDataOffset] = rgb[rgbOffset];
+                    rawData[rawDataOffset + 1] = rgb[rgbOffset + 1];
+                    rawData[rawDataOffset + 2] = rgb[rgbOffset + 2];
+                    rawData[rawDataOffset + 3] = 255;
+                }
+            }
+            else if (srcBitmap.PixelFormat == PixelFormat.Format32bppArgb)
+            {
+                rawData = new byte[srcBitmap.Width * srcBitmap.Height * 4];
+                Marshal.Copy(bitmapData.Scan0, rawData, 0, rawData.Length);
+                srcBitmap.UnlockBits(bitmapData);
+            }
+            else
+                throw new Exception(String.Format("Unrecognised source Pixel Format: {0}", srcBitmap.PixelFormat));
+
+            return rawData;
         }
     }
 }
