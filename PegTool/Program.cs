@@ -28,24 +28,60 @@ namespace PegTool
                     Repack(args[1]);
                 }
                 else
-                    Usage();
+                    Usage(args);
+            }
+            else if (args.Length == 1 && File.Exists(args[0]))
+            {
+                string ext = Path.GetExtension(args[0]).ToLower();
+                if (ext == ".peg_pc" || ext == ".peg_xbox2")
+                {
+                    Unpack(args[0]);
+#if !DEBUG
+                    Console.WriteLine();
+                    Console.WriteLine("Press enter/return to exit.");
+                    Console.ReadLine();
+#endif
+                }
+                else if (ext == ".peg_desc")
+                {
+                    Repack(args[0]);
+#if !DEBUG
+                    Console.WriteLine();
+                    Console.WriteLine("Press enter/return to exit.");
+                    Console.ReadLine();
+#endif
+                }
+                else
+                    Usage(args);
             }
             else
-                Usage();
+                Usage(args);
 
 #if DEBUG
+            Console.WriteLine();
+            Console.WriteLine("Press enter/return to exit.");
             Console.ReadLine();
 #endif
         }
 
-        public static void Usage()
+        public static void Usage(string[] args)
         {
             Console.WriteLine("PegTool");
             Console.WriteLine("Saints Row 2 texture manipulation tool");
+#if DEBUG
+            Console.WriteLine("DEBUG build");
+            Console.WriteLine("You passed the following parameters:");
+            for (int i = 0; i < args.Length; i++)
+            {
+                Console.WriteLine("{0}: \"{1}\"", i, args[i]);
+            }
+#endif
             Console.WriteLine();
             Console.WriteLine("Available actions:");
             Console.WriteLine("\tunpack <peg_pc file>");
             Console.WriteLine("\trepack <peg_desc file>");
+            Console.WriteLine();
+            Console.WriteLine("If you just pass a single filename on the command line (without specifying an\naction), PegTool will try to automatically guess if it should unpack or repack.\nThis also works for drag/drop.");
         }
 
         public static void Unpack(string pegFilePath)
@@ -56,7 +92,7 @@ namespace PegTool
                 Console.WriteLine("peg_pc file does not exist: {0}", pegFilePath);
                 return;
             }
-            string extension = Path.GetExtension(pegFilePath);
+            string extension = Path.GetExtension(pegFilePath).ToLower();
             bool xbox = (extension == ".peg_xbox2");
             if (!(extension == ".peg_pc" || extension == ".peg_xbox2"))
             {
@@ -80,7 +116,7 @@ namespace PegTool
             pegFile.Read(pegFileStream);
 
             string extractionPath = Path.GetDirectoryName(pegFilePath);
-            Console.Write("Writing peg description to: {0}", pegDescFilePath);
+            Console.Write("Writing peg description to: {0}... ", pegDescFilePath);
             Console.WriteLine(" done.");
             WritePegDescription(pegFile, pegDescFilePath);
             Console.WriteLine("Unpacking images:");
