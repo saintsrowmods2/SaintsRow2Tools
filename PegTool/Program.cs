@@ -78,8 +78,8 @@ namespace PegTool
 #endif
             Console.WriteLine();
             Console.WriteLine("Available actions:");
-            Console.WriteLine("\tunpack <peg_pc file>");
-            Console.WriteLine("\trepack <peg_desc file>");
+            Console.WriteLine("\tPegTool unpack <peg_pc file>");
+            Console.WriteLine("\tPegTool repack <peg_desc file>");
             Console.WriteLine();
             Console.WriteLine("If you just pass a single filename on the command line (without specifying an\naction), PegTool will try to automatically guess if it should unpack or repack.\nThis also works for drag/drop.");
         }
@@ -218,12 +218,18 @@ namespace PegTool
                     switch (format)
                     {
                         case PegFormat.A8R8G8B8:
+                            if (pegFile.BigEndian)
+                                rawData = ImageFormats.ByteSwap(rawData, format);
                             bitmap = ImageFormats.MakeBitmapFromA8R8G8B8(frame.Width, frame.Height, rawData);
                             break;
                         case PegFormat.R5G6B5:
+                            if (pegFile.BigEndian)
+                                rawData = ImageFormats.ByteSwap(rawData, format);
                             bitmap = ImageFormats.MakeBitmapFromR5G6B5(frame.Width, frame.Height, rawData);
                             break;
                         case PegFormat.DXT1:
+                            if (pegFile.BigEndian)
+                                rawData = ImageFormats.ByteSwap(rawData, format);
                             byte[] decompressedDXT1 = ImageFormats.Decompress(rawData, frame.Width, frame.Height, format);
                             bitmap = ImageFormats.MakeBitmapFromDXT(frame.Width, frame.Height, decompressedDXT1, false);
                             break;

@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
 
@@ -28,6 +29,40 @@ namespace Gibbed.SaintsRow2.FileFormats
 
             [DllImport("squish.dll", EntryPoint = "DecompressImage")]
             internal static extern void DecompressImage([MarshalAs(UnmanagedType.LPArray)] byte[] rgba, uint width, uint height, [MarshalAs(UnmanagedType.LPArray)] byte[] blocks, int flags);
+        }
+
+        public static byte[] ByteSwap(byte[] data, PegFormat format)
+        {
+            byte[] output = new byte[data.Length];
+            switch (format)
+            {
+                case PegFormat.DXT1:
+                    for (int i = 0; i < data.Length; i += 8)
+                    {
+                        output[i] = data[i + 1];
+                        output[i + 1] = data[i];
+                        output[i + 2] = data[i + 3];
+                        output[i + 3] = data[i + 2];
+                        output[i + 4] = data[i + 4];
+                        output[i + 5] = data[i + 5];
+                        output[i + 6] = data[i + 6];
+                        output[i + 7] = data[i + 7];
+                    }
+                    break;
+                case PegFormat.A8R8G8B8:
+                    for (int i = 0; i < data.Length; i+=4)
+                    {
+                        output[i] = data[i + 3];
+                        output[i + 1] = data[i + 2];
+                        output[i + 2] = data[i + 1];
+                        output[i + 3] = data[i];
+                    }
+                    break;
+                default:
+                    throw new Exception("Unhandled format: " + format.ToString());
+            }
+
+            return output;
         }
 
         public static byte[] Compress(byte[] decompressed, uint width, uint height, PegFormat format)
