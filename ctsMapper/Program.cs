@@ -15,11 +15,11 @@ namespace ctsMapper
         {
             x = x * -1f;
             //y = y * -1f;
-            int xint = (int)((x / 5800) * 2048) + 1256;
-            int yint = (int)((y / 5700) * 2048) + 1132;
+            x = ((x / 5800f) * 2048f) + 1256f;
+            y = ((y / 5700f) * 2048f) + 1132f;
 
-            g.DrawLine(p, xint - 4, yint - 4, xint + 4f, yint + 4f);
-            g.DrawLine(p, xint - 4, yint + 4, xint + 4f, yint - 4f);
+            g.DrawLine(p, x - 4f, y - 4f, x + 4f, y + 4f);
+            g.DrawLine(p, x - 4f, y + 4f, x + 4f, y - 4f);
             g.DrawString(name, new Font("Verdana", 12f, FontStyle.Regular), p.Brush, x, y);
 
             Console.WriteLine("Translated {0}: ({1}, {2})", name, x, y);
