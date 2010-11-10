@@ -65,7 +65,29 @@ namespace Gibbed.SaintsRow2.Helpers
 			return swapped;
 		}
 
-		public static int Align(this int value, int align)
+        public static UInt32 Reverse(this UInt32 value)
+        {
+            UInt32 reversed = 0;
+
+            for (Int32 i = 0; i < 32; i++)
+            {
+                Int32 targetBit = 31 - i;
+                UInt32 testMask = (UInt32)(1 << i);
+                UInt32 setMask = (UInt32)(1 << targetBit);
+
+                if ((value & testMask) != 0)
+                {
+                    reversed |= setMask;
+                }
+                else
+                {
+                }
+            }
+
+            return reversed;
+        }
+
+        public static int Align(this int value, int align)
 		{
 			if (value == 0)
 			{

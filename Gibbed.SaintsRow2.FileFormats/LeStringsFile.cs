@@ -29,16 +29,19 @@ namespace Gibbed.SaintsRow2.FileFormats
 			this.Strings.Clear();
 
 			int indexSize = BitConverter.ToInt16(data, 6);
+            Console.WriteLine("indexSize: {0}", indexSize);
 			for (int i = 0; i < indexSize; i++)
 			{
 				int blockCount = BitConverter.ToInt32(data, 12 + (i * 8) + 0);
 				int blockOffset = BitConverter.ToInt32(data, 12 + (i * 8) + 4);
+                Console.WriteLine("\ti: {0:X2}, blockCount: {1}, blockOffset: {2}", i, blockCount, blockOffset);
 
 				for (int j = 0; j < blockCount; j++)
 				{
 					int stringOffset = BitConverter.ToInt32(data, blockOffset + (j * 4));
 
 					UInt32 hash = BitConverter.ToUInt32(data, stringOffset).Swap();
+                    Console.Write("\t\tj: {0:X2}, stringOffset: {1}, hash: 0x{2:X8}, i & hash: 0x{3:X8} ", j, stringOffset, hash, i & hash);
 
 					int k = 0;
 					while (true)
@@ -62,7 +65,8 @@ namespace Gibbed.SaintsRow2.FileFormats
 					}
 
 					string text = Encoding.Unicode.GetString(stringData);
-
+                    Console.WriteLine("stringData len: {0}", stringData.Length);
+                    //Console.WriteLine(text);
 					if (this.Strings.ContainsKey(hash))
 					{
 						throw new InvalidOperationException();

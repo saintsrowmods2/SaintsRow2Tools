@@ -31,6 +31,7 @@ namespace Gibbed.SaintsRow2.FileFormats
             {
                 frame.Offset = frame.Offset.Swap();
                 frame.Width = frame.Width.Swap();
+                frame.Width = 512;
                 frame.Height = frame.Height.Swap();
                 frame.Format = frame.Format.Swap();
                 frame.Unknown0A = frame.Unknown0A.Swap();
