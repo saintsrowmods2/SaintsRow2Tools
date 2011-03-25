@@ -1,0 +1,9 @@
+syntax: glob
+*.suo
+*.user
+*.opensdf
+*.sdf
+temp
+syntax: regexp
+.*?/obj/
+.*?/bin/
