@@ -223,6 +223,7 @@ INT WINAPIV HookedDebugPrint(lua_State *lua)
 				msgW = (TCHAR*)malloc(msgLen * sizeof(TCHAR));
 				MultiByteToWideChar(CP_ACP, 0, msg, -1, (LPWSTR)msgW, msgLen);
 				WriteToLog(_T("Lua"), (TCHAR*)msgW);
+				free(msgW);
 			}
 		}
 
