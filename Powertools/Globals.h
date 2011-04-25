@@ -16,6 +16,8 @@ extern SHORT hkg_consoleBuffer;
 extern BOOL hkg_logLua;
 extern HANDLE hkg_logFile;
 
+extern VOID WINAPI WriteToLog(TCHAR*, TCHAR*, ...);
+
 typedef union {
   void *gc;
   void *p;

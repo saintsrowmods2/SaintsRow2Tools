@@ -20,7 +20,6 @@ using namespace std;
 BOOL WINAPI InstallHooks();
 VOID WINAPI ReadConfiguration();
 VOID WINAPI RedirectIOToConsole();
-VOID WINAPI WriteToLog(TCHAR*, TCHAR*, ...);
 BOOL WINAPI TranslateFunction(PVOID, CONST CHAR*, CONST CHAR*);
 BOOL WINAPI HookFunctionByName(FARPROC*, FARPROC, LPCSTR, LPCSTR);
 BOOL WINAPI HookFunctionByOffset(FARPROC*, FARPROC, LPTSTR, DWORD);
