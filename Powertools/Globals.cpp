@@ -10,3 +10,8 @@ FLOAT	hkg_timescale			= 0.0;
 FLOAT	hkg_origTimescale		= 0.0;
 BOOL	hkg_osdEnabled			= TRUE;
 BOOL    hkg_initializedCriticalSection = FALSE;
+
+SHORT   hkg_consoleBuffer		= 0;
+
+BOOL    hkg_log					= FALSE;
+HANDLE  hkg_logFile				= NULL;
