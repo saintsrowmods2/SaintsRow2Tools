@@ -210,6 +210,22 @@ INT WINAPIV HookedDebugPrint(lua_State *lua)
             g_debugLines.erase(g_debugLines.begin());
         }
 
+		if (hkg_logLua)
+		{
+			if (sizeof(TCHAR) == sizeof(char))
+			{
+				WriteToLog(_T("Lua"), (TCHAR*)msg);
+			}
+			else
+			{
+				TCHAR* msgW = NULL;
+				DWORD msgLen = MultiByteToWideChar(CP_ACP, 0, msg, -1, NULL, 0);
+				msgW = (TCHAR*)malloc(msgLen * sizeof(TCHAR));
+				MultiByteToWideChar(CP_ACP, 0, msg, -1, (LPWSTR)msgW, msgLen);
+				WriteToLog(_T("Lua"), (TCHAR*)msgW);
+			}
+		}
+
         g_debugLines.push_back(_strdup(msg));
     }
 
