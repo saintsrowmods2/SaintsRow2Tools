@@ -81,7 +81,7 @@ VOID WINAPI ReadConfiguration()
 
     GetPrivateProfileString(
         _T("speed"),
-        _T("percentage"),
+        _T("timescale"),
         NULL,
         buffer,
         MAX_PATH,
@@ -90,8 +90,8 @@ VOID WINAPI ReadConfiguration()
     if( _tcslen(buffer) != 0 )
     {
         LPWSTR unused = NULL;
-        hkg_percentage = (float)_tcstod(buffer, &unused); 
-        hkg_origPercentage = hkg_percentage;
+        hkg_timescale = (float)_tcstod(buffer, &unused); 
+        hkg_origTimescale = hkg_timescale;
     }
 
     return;

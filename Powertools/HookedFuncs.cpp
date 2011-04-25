@@ -117,7 +117,7 @@ HRESULT WINAPI HookedEndScene(IDirect3DDevice9 FAR *This)
 
 VOID WINAPIV HookedCutsceneBegin()
 {
-    hkg_percentage = 1.0f;
+    hkg_timescale = 1.0f;
     hkg_isCutscenePlaying = true;
 
     RealCutsceneBegin();
@@ -125,7 +125,7 @@ VOID WINAPIV HookedCutsceneBegin()
 
 VOID WINAPIV HookedCutsceneEnd()
 {
-    hkg_percentage = hkg_origPercentage;
+    hkg_timescale = hkg_origTimescale;
     hkg_isCutscenePlaying = false;
 
     RealCutsceneEnd();
@@ -159,7 +159,7 @@ BOOL WINAPI HookedQueryPerformanceCounter(LARGE_INTEGER* count)
         // step 1: obtain time difference and get a portion of that for fake
         // timer use
         __int64 realDiff = (currentTime - g_lastRealTime);
-        __int64 fakeDiff = (__int64)(realDiff * hkg_percentage);
+        __int64 fakeDiff = (__int64)(realDiff * hkg_timescale);
 
         // step 2: increment fake timers
 

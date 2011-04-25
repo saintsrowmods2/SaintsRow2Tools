@@ -5,12 +5,16 @@
 extern LPSTR hkg_cutsceneName;
 extern BOOL  hkg_isCutscenePlaying;
 extern FLOAT* hkg_playerPosition;
-extern FLOAT hkg_percentage;
-extern FLOAT hkg_origPercentage;
+extern FLOAT hkg_timescale;
+extern FLOAT hkg_origTimescale;
 extern BOOL hkg_osdEnabled;
 extern BYTE* hkg_tableSize;
 extern vector<char*> g_debugLines;
 extern BOOL hkg_initializedCriticalSection;
+
+extern SHORT hkg_consoleBuffer;
+extern BOOL hkg_log;
+extern HANDLE hkg_logFile;
 
 typedef union {
   void *gc;
