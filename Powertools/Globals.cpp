@@ -13,5 +13,5 @@ BOOL    hkg_initializedCriticalSection = FALSE;
 
 SHORT   hkg_consoleBuffer		= 0;
 
-BOOL    hkg_log					= FALSE;
+BOOL    hkg_logLua				= FALSE;
 HANDLE  hkg_logFile				= NULL;

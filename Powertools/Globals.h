@@ -13,7 +13,7 @@ extern vector<char*> g_debugLines;
 extern BOOL hkg_initializedCriticalSection;
 
 extern SHORT hkg_consoleBuffer;
-extern BOOL hkg_log;
+extern BOOL hkg_logLua;
 extern HANDLE hkg_logFile;
 
 typedef union {
