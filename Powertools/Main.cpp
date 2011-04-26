@@ -140,7 +140,14 @@ VOID WINAPI ReadConfiguration()
         MAX_PATH,
         path.c_str());
 
-    if( _tcslen(buffer) != 0 )
+	if (_tcsstr(buffer, _T("auto")) != NULL)
+	{
+		LARGE_INTEGER currentFreq;
+		QueryPerformanceFrequency(&currentFreq);
+		hkg_timescale = (float)2156321 / (float)currentFreq.QuadPart;
+		hkg_origTimescale = hkg_timescale;
+	}
+	else if ( _tcslen(buffer) != 0 )
     {
         LPWSTR unused = NULL;
         hkg_timescale = (float)_tcstod(buffer, &unused); 

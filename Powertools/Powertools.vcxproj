@@ -136,7 +136,7 @@
   <ItemGroup>
     <None Include="Powertools.def" />
     <None Include="Powertools.ini">
-      <DeploymentContent>true</DeploymentContent>
+      <DeploymentContent>false</DeploymentContent>
     </None>
   </ItemGroup>
   <ItemGroup>
