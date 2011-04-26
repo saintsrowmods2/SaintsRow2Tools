@@ -7,6 +7,7 @@ extern BOOL  hkg_isCutscenePlaying;
 extern FLOAT* hkg_playerPosition;
 extern FLOAT hkg_timescale;
 extern FLOAT hkg_origTimescale;
+extern __int64 hkg_freqTarget;
 extern BOOL hkg_osdEnabled;
 extern BYTE* hkg_tableSize;
 extern vector<char*> g_debugLines;

@@ -54,6 +54,7 @@ BOOL APIENTRY DllMain(HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserv
 			WriteToLog(_T("Powertools"), _T("loglua = %s\n"), hkg_logLua ? _T("true") : _T("false"));
 			WriteToLog(_T("Powertools"), _T("osd = %s\n"), hkg_osdEnabled ? _T("true") : _T("false"));
 			WriteToLog(_T("Powertools"), _T("[speed]\n"));
+			WriteToLog(_T("Powertools"), _T("freqtarget = %d\n"), hkg_freqTarget);
 			WriteToLog(_T("Powertools"), _T("timescale = %f\n"), hkg_timescale);
 
 			LARGE_INTEGER currentFreq;
@@ -132,6 +133,13 @@ VOID WINAPI ReadConfiguration()
     if( _tcsstr(buffer, _T("true")) != NULL )
         hkg_osdEnabled = true;
 
+	GetPrivateProfileString(_T("speed"), _T("freqtarget"), NULL, buffer, MAX_PATH, path.c_str());
+	if (_tcslen(buffer) != 0)
+	{
+		LPWSTR unused = NULL;
+		hkg_freqTarget = _tcstol(buffer, &unused, 10);
+	}
+
     GetPrivateProfileString(
         _T("speed"),
         _T("timescale"),
@@ -144,7 +152,7 @@ VOID WINAPI ReadConfiguration()
 	{
 		LARGE_INTEGER currentFreq;
 		QueryPerformanceFrequency(&currentFreq);
-		hkg_timescale = (float)2156321 / (float)currentFreq.QuadPart;
+		hkg_timescale = (float)hkg_freqTarget / (float)currentFreq.QuadPart;
 		hkg_origTimescale = hkg_timescale;
 	}
 	else if ( _tcslen(buffer) != 0 )

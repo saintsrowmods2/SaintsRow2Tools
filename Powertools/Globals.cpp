@@ -8,6 +8,7 @@ BYTE*   hkg_tableSize			= (BYTE*)0x00D74D52;
 
 FLOAT	hkg_timescale			= 0.0;
 FLOAT	hkg_origTimescale		= 0.0;
+__int64	hkg_freqTarget			= 0;
 BOOL	hkg_osdEnabled			= TRUE;
 BOOL    hkg_initializedCriticalSection = FALSE;
 
