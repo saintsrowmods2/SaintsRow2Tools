@@ -1,7 +1,7 @@
 #pragma once
 #include "common.h"
-#include <vector>
 #include <windows.h>
+#include <vector>
 
 extern LPSTR hkg_cutsceneName;
 extern BOOL  hkg_isCutscenePlaying;
@@ -11,7 +11,7 @@ extern FLOAT hkg_origTimescale;
 extern __int64 hkg_freqTarget;
 extern BOOL hkg_osdEnabled;
 extern BYTE* hkg_tableSize;
-extern vector<char*> g_debugLines;
+extern std::vector<char*> g_debugLines;
 extern BOOL hkg_initializedCriticalSection;
 
 extern SHORT hkg_consoleBuffer;
