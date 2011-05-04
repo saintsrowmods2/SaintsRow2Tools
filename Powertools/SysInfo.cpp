@@ -27,6 +27,14 @@ BOOL WINAPI ProcessorDetect()
 	char CPUString[0x20];
 	char CPUBrandString[0x40];
 	int CPUInfo[4] = {-1};
+	int nSteppingID = 0;
+	int nModel = 0;
+	int nFamily = 0;
+	int nProcessorType = 0;
+	int nExtendedmodel = 0;
+	int nExtendedfamily = 0;
+	int nBrandIndex = 0;
+
 	unsigned int nIds = 0;
 	__cpuid(CPUInfo, 0);
 
@@ -47,6 +55,18 @@ BOOL WINAPI ProcessorDetect()
 		WriteToLog(_T("CPU Info"), _T("Current CPU manufacturer string: %s\n"), (TCHAR*)CPUStringW);
 		free(CPUStringW);
 	}
+
+	__cpuid(CPUInfo, 1);
+	nSteppingID = CPUInfo[0] & 0xf;
+	nModel = (CPUInfo[0] >> 4) & 0xf;
+	nFamily = (CPUInfo[0] >> 8) & 0xf;
+	nProcessorType = (CPUInfo[0] >> 12) & 0x3;
+	nExtendedmodel = (CPUInfo[0] >> 16) & 0xf;
+	nExtendedfamily = (CPUInfo[0] >> 20) & 0xff;
+	nBrandIndex = CPUInfo[1] & 0xff;
+
+	WriteToLog(_T("CPU Info"), _T("Family: %d, Model: %d, Stepping: %d, Type: %d, ExtendedModel: %d, ExtendedFamily: %d, BrandIndex: %d\n"),
+		nFamily, nModel, nSteppingID, nProcessorType, nExtendedmodel, nExtendedfamily, nBrandIndex);
 
 	__cpuid(CPUInfo, 0x80000000);
 	memset(CPUBrandString, 0, sizeof(CPUBrandString));

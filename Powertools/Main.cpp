@@ -61,13 +61,8 @@ BOOL APIENTRY DllMain(HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserv
 			}
 
 			WriteToLog(_T("Powertools"), _T("Configuration state:\n"));
-			WriteToLog(_T("Powertools"), _T("[core]\n"));
-			WriteToLog(_T("Powertools"), _T("consolebuffer = %d\n"), hkg_consoleBuffer);
-			WriteToLog(_T("Powertools"), _T("loglua = %s\n"), hkg_logLua ? _T("true") : _T("false"));
-			WriteToLog(_T("Powertools"), _T("osd = %s\n"), hkg_osdEnabled ? _T("true") : _T("false"));
-			WriteToLog(_T("Powertools"), _T("[speed]\n"));
-			WriteToLog(_T("Powertools"), _T("freqtarget = %d\n"), hkg_freqTarget);
-			WriteToLog(_T("Powertools"), _T("timescale = %f\n"), hkg_timescale);
+			WriteToLog(_T("Powertools"), _T("[core]\nconsolebuffer = %d\nloglua = %s\nosd = %s\n[speed]\nfreqtarget = %d\ntimescale = %f\n"),
+				hkg_consoleBuffer, hkg_logLua ? _T("true") : _T("false"), hkg_osdEnabled ? _T("true") : _T("false"), hkg_freqTarget, hkg_timescale);
 
 			LARGE_INTEGER currentFreq;
 			QueryPerformanceFrequency(&currentFreq);
