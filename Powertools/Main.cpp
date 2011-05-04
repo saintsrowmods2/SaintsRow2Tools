@@ -19,6 +19,7 @@ using namespace std;
         (type)GetProcAddress(GetModuleHandle(_T(lib)), func)
 
 BOOL WINAPI InstallHooks();
+BOOL WINAPI InstallHooks_Steam_1_2();
 VOID WINAPI ReadConfiguration();
 VOID WINAPI RedirectIOToConsole();
 BOOL WINAPI TranslateFunction(PVOID, CONST CHAR*, CONST CHAR*);
@@ -250,6 +251,21 @@ VOID WINAPI WriteToLog(TCHAR* source, TCHAR* string, ...)
 
 BOOL WINAPI InstallHooks()
 {
+	switch (SR2_EXE_CRC)
+	{
+		case CRC_STEAM_VER_1_2:
+			return InstallHooks_Steam_1_2();
+		break;
+
+		default:
+			return false;
+		break;
+	}
+}
+
+BOOL WINAPI InstallHooks_Steam_1_2()
+{
+	WriteToLog(_T("Powertools"), _T("Installing Steam 1.2 hooks:"));
     BOOL result = false;
     *hkg_tableSize++;
 

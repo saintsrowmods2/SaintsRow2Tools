@@ -9,6 +9,7 @@
 #pragma comment(lib, "powrprof.lib")
 
 ULONG crc32_table[256];
+int SR2_EXE_CRC = 0;
 
 VOID WINAPI LogSystemInfo()
 {
@@ -237,9 +238,11 @@ BOOL WINAPI CheckSaintsRow2Integrity()
 	crc = Get_CRC((char*)buffer);
 	free(buffer);
 
-	if (crc == 0x3758E11B)
+	if (crc == CRC_STEAM_VER_1_2)
 	{
-		WriteToLog(_T("Powertools"), _T("Found Steam SR2_pc.exe, CRC32: 0x%08X\n"), crc);
+		WriteToLog(_T("Powertools"), _T("Found Steam SR2_pc.exe version 1.2, CRC32: 0x%08X\n"), crc);
+		SR2_EXE_CRC = crc;
+		return true;
 	}
 	else
 	{
