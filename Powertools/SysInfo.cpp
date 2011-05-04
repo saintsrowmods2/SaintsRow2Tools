@@ -235,7 +235,7 @@ BOOL WINAPI CheckSaintsRow2Integrity()
 	}
 	CloseHandle(sr2Exe);
 	
-	crc = Get_CRC((char*)buffer);
+	crc = Get_CRC((char*)buffer, exeLength);
 	free(buffer);
 
 	if (crc == CRC_STEAM_VER_1_2)
@@ -286,7 +286,7 @@ ULONG Reflect(ULONG ref, char ch)
       return value; 
 }
 
-int Get_CRC(char* text) 
+int Get_CRC(char* text, int len) 
 {// Pass a text string to this function and it will return the CRC. 
 
       // Once the lookup table has been filled in by the two functions above, 
@@ -298,11 +298,8 @@ int Get_CRC(char* text)
 
       // Start out with all bits set high. 
       ULONG  ulCRC(0xffffffff); 
-      int len; 
       unsigned char* buffer; 
 
-      // Get the length. 
-      len = strlen(text); 
       // Save the text in the buffer. 
       buffer = (unsigned char*)text; 
       // Perform the algorithm on each character 
