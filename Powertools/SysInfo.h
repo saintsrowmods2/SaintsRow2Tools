@@ -5,7 +5,6 @@
 #include <windows.h>
 
 typedef void (WINAPI *PGNSI)(LPSYSTEM_INFO);
-typedef std::vector<PROCESSOR_POWER_INFORMATION> PPIVector;
 #define PRODUCT_PROFESSIONAL	0x00000030
 #define VER_SUITE_WH_SERVER	0x00008000
 
@@ -17,7 +16,8 @@ typedef struct _PROCESSOR_POWER_INFORMATION {
       ULONG  MaxIdleState;
       ULONG  CurrentIdleState;
     } PROCESSOR_POWER_INFORMATION , *PPROCESSOR_POWER_INFORMATION;
+typedef std::vector<PROCESSOR_POWER_INFORMATION> PPIVector;
 
-BOOL WINAPI ProcessorDetect();
-BOOL WINAPI LogOSDetect();
-VOID WINAPI LogSystemInfo();
+extern BOOL WINAPI ProcessorDetect();
+extern BOOL WINAPI LogOSDetect();
+extern VOID WINAPI LogSystemInfo();

@@ -1,5 +1,6 @@
 #include <intrin.h>
 #include <tchar.h>
+#include <vector>
 #include <windows.h>
 #include "SysInfo.h"
 #include "Globals.h"
