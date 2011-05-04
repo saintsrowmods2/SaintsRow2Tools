@@ -1,9 +1,11 @@
 #pragma once
 
 #include "common.h"
+#include <vector>
 #include <windows.h>
 
 typedef void (WINAPI *PGNSI)(LPSYSTEM_INFO);
+typedef std::vector<PROCESSOR_POWER_INFORMATION> PPIVector;
 #define PRODUCT_PROFESSIONAL	0x00000030
 #define VER_SUITE_WH_SERVER	0x00008000
 

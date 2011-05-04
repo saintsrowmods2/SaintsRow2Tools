@@ -20,7 +20,59 @@ VOID WINAPI LogSystemInfo()
 
 BOOL WINAPI ProcessorDetect()
 {
-	typedef std::vector<PROCESSOR_POWER_INFORMATION> PPIVector;
+	char CPUString[0x20];
+	char CPUBrandString[0x20];
+	int CPUInfo[4] = {-1};
+	unsigned int nIds = 0;
+	__cpuid(CPUInfo, 0);
+
+	nIds = CPUInfo[0];
+    memset(CPUString, 0, sizeof(CPUString));
+    *((int*)CPUString) = CPUInfo[1];
+    *((int*)(CPUString+4)) = CPUInfo[3];
+    *((int*)(CPUString+8)) = CPUInfo[2];
+
+	if (sizeof(TCHAR) == sizeof(char))
+		WriteToLog(_T("SysInfo"), _T("Current CPU manufacturer string: %s\n"), (TCHAR*)CPUString);
+	else
+	{
+		TCHAR* CPUStringW = NULL;
+		DWORD CPUStringLen = MultiByteToWideChar(CP_ACP, 0, CPUString, -1, NULL, 0);
+		CPUStringW = (TCHAR*)malloc(CPUStringLen * sizeof(TCHAR));
+		MultiByteToWideChar(CP_ACP, 0, CPUString, -1, (LPWSTR)CPUStringW, CPUStringLen);
+		WriteToLog(_T("SysInfo"), _T("Current CPU manufacturer string: %s\n"), (TCHAR*)CPUStringW);
+		free(CPUStringW);
+	}
+
+	__cpuid(CPUInfo, 0x80000000);
+	if (CPUInfo[0] >= 0x80000004)
+	{
+		__cpuid(CPUInfo, 0x80000002);
+		memcpy(CPUBrandString, CPUInfo, sizeof(CPUInfo));
+		__cpuid(CPUInfo, 0x80000003);
+		memcpy(CPUBrandString + 16, CPUInfo, sizeof(CPUInfo));
+		__cpuid(CPUInfo, 0x80000004);
+		memcpy(CPUBrandString + 32, CPUInfo, sizeof(CPUInfo));
+
+		if (sizeof(TCHAR) == sizeof(char))
+			WriteToLog(_T("SysInfo"), _T("Current CPU Brand string: %s\n"), (TCHAR*)CPUBrandString);
+		else
+		{
+			TCHAR* CPUStringW = NULL;
+			DWORD CPUStringLen = MultiByteToWideChar(CP_ACP, 0, CPUBrandString, -1, NULL, 0);
+			CPUStringW = (TCHAR*)malloc(CPUStringLen * sizeof(TCHAR));
+			MultiByteToWideChar(CP_ACP, 0, CPUBrandString, -1, (LPWSTR)CPUStringW, CPUStringLen);
+			WriteToLog(_T("SysInfo"), _T("Current CPU Brand string: %s\n"), (TCHAR*)CPUStringW);
+			free(CPUStringW);
+		}
+
+		return true;
+	}
+	else
+	{
+		WriteToLog(_T("SysInfo"), _T("Cannot get CPU Brand String."));
+		return false;
+	}
 
 	SYSTEM_INFO sys_info;
     PPIVector ppis;
@@ -38,64 +90,8 @@ BOOL WINAPI ProcessorDetect()
 
 	for (PPIVector::iterator it = ppis.begin(); it != ppis.end(); ++it)
     {
-        WriteToLog(_T("SysInfo"), _T("stats for CPU %d: "), it->Number);
-		WriteToLog(_T("SysInfo"), _T("max frequency: %d MHz"), it->MaxMhz);
-		WriteToLog(_T("SysInfo"), _T("current frequency: %d MHz"), it->CurrentMhz);
+		WriteToLog(_T("SysInfo"), _T("stats for CPU %d: max: %d MHz, current: %d MHz\n"), it->Number, it->MaxMhz, it->CurrentMhz);
     }
-
-	char CPUString[0x20];
-	char CPUBrandString[0x20];
-	int CPUInfo[4] = {-1};
-	unsigned int nIds = 0;
-	__cpuid(CPUInfo, 0);
-
-	nIds = CPUInfo[0];
-    memset(CPUString, 0, sizeof(CPUString));
-    *((int*)CPUString) = CPUInfo[1];
-    *((int*)(CPUString+4)) = CPUInfo[3];
-    *((int*)(CPUString+8)) = CPUInfo[2];
-
-	if (sizeof(TCHAR) == sizeof(char))
-		WriteToLog(_T("SysInfo"), _T("CPU manufacturer string: %s\n"), (TCHAR*)CPUString);
-	else
-	{
-		TCHAR* CPUStringW = NULL;
-		DWORD CPUStringLen = MultiByteToWideChar(CP_ACP, 0, CPUString, -1, NULL, 0);
-		CPUStringW = (TCHAR*)malloc(CPUStringLen * sizeof(TCHAR));
-		MultiByteToWideChar(CP_ACP, 0, CPUString, -1, (LPWSTR)CPUStringW, CPUStringLen);
-		WriteToLog(_T("SysInfo"), _T("CPU manufacturer string: %s\n"), (TCHAR*)CPUStringW);
-		free(CPUStringW);
-	}
-
-	__cpuid(CPUInfo, 0x80000000);
-	if (CPUInfo[0] >= 0x80000004)
-	{
-		__cpuid(CPUInfo, 0x80000002);
-		memcpy(CPUBrandString, CPUInfo, sizeof(CPUInfo));
-		__cpuid(CPUInfo, 0x80000003);
-		memcpy(CPUBrandString + 16, CPUInfo, sizeof(CPUInfo));
-		__cpuid(CPUInfo, 0x80000004);
-		memcpy(CPUBrandString + 32, CPUInfo, sizeof(CPUInfo));
-
-		if (sizeof(TCHAR) == sizeof(char))
-			WriteToLog(_T("SysInfo"), _T("CPU Brand string: %s\n"), (TCHAR*)CPUBrandString);
-		else
-		{
-			TCHAR* CPUStringW = NULL;
-			DWORD CPUStringLen = MultiByteToWideChar(CP_ACP, 0, CPUBrandString, -1, NULL, 0);
-			CPUStringW = (TCHAR*)malloc(CPUStringLen * sizeof(TCHAR));
-			MultiByteToWideChar(CP_ACP, 0, CPUBrandString, -1, (LPWSTR)CPUStringW, CPUStringLen);
-			WriteToLog(_T("SysInfo"), _T("CPU Brand string: %s\n"), (TCHAR*)CPUStringW);
-			free(CPUStringW);
-		}
-
-		return true;
-	}
-	else
-	{
-		WriteToLog(_T("SysInfo"), _T("Cannot get CPU Brand String."));
-		return false;
-	}
 }
 
 BOOL WINAPI LogOSDetect()
