@@ -56,6 +56,7 @@ BOOL APIENTRY DllMain(HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserv
 			if (!CheckSaintsRow2Integrity())
 			{
 				MessageBox(NULL, L"Powertools failed to start because it did not find a compatible Saints Row 2 executable!\nUpload the Powertools.log file in your Saints Row 2 directory when you ask for help.", L"Powertools Error", MB_ICONERROR | MB_OK);
+				ExitProcess(1);
 				return false;
 			}
 
@@ -265,7 +266,7 @@ BOOL WINAPI InstallHooks()
 
 BOOL WINAPI InstallHooks_Steam_1_2()
 {
-	WriteToLog(_T("Powertools"), _T("Installing Steam 1.2 hooks:"));
+	WriteToLog(_T("Powertools"), _T("Installing Steam 1.2 hooks:\n"));
     BOOL result = false;
     *hkg_tableSize++;
 
