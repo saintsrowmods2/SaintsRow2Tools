@@ -266,7 +266,7 @@ BOOL WINAPI InstallHooks()
 
 BOOL WINAPI InstallHooks_Steam_1_2()
 {
-	WriteToLog(_T("Powertools"), _T("Installing Steam 1.2 hooks:\n"));
+	WriteToLog(_T("Powertools"), _T("Using Steam 1.2 hooks.\n"));
     BOOL result = false;
     *hkg_tableSize++;
 
