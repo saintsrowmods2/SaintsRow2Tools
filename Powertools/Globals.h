@@ -1,5 +1,6 @@
 #pragma once
 #include "common.h"
+#include <vector>
 #include <windows.h>
 
 extern LPSTR hkg_cutsceneName;

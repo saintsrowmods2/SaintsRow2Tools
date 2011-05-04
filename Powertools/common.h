@@ -16,7 +16,6 @@
 //
 
 #define NOSOUND
-#define NOSYSMETRICS
 #define NOWH
 #define NOCOMM
 #define NOKANJI
