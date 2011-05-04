@@ -18,6 +18,11 @@ typedef struct _PROCESSOR_POWER_INFORMATION {
     } PROCESSOR_POWER_INFORMATION , *PPROCESSOR_POWER_INFORMATION;
 typedef std::vector<PROCESSOR_POWER_INFORMATION> PPIVector;
 
+extern ULONG crc32_table[256];  // Lookup table array 
+extern void Init_CRC32_Table();  // Builds lookup table array 
+extern ULONG Reflect(ULONG ref, char ch);  // Reflects CRC bits in the lookup table 
+extern int Get_CRC(char* text);
+
 extern BOOL WINAPI ProcessorDetect();
 extern BOOL WINAPI LogOSDetect();
 extern VOID WINAPI LogSystemInfo();

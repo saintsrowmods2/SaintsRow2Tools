@@ -51,10 +51,10 @@ BOOL APIENTRY DllMain(HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserv
 
 			LogSystemInfo();
 
-			WriteToLog(_T("SysInfo"), _T("Checking for known Saints Row 2 executable...\n"));
+			WriteToLog(_T("Powertools"), _T("Checking for known Saints Row 2 executable...\n"));
 			if (!CheckSaintsRow2Integrity())
 			{
-				MessageBox(NULL, L"Powertools failed to start!\nUpload the Powertools.log file in your Saints Row 2 directory when you ask for help.", L"Powertools Error", MB_ICONERROR | MB_OK);
+				MessageBox(NULL, L"Powertools failed to start because it did not find a compatible Saints Row 2 executable!\nUpload the Powertools.log file in your Saints Row 2 directory when you ask for help.", L"Powertools Error", MB_ICONERROR | MB_OK);
 				return false;
 			}
 

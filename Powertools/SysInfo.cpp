@@ -8,6 +8,8 @@
 #include <powrprof.h>
 #pragma comment(lib, "powrprof.lib")
 
+ULONG crc32_table[256];
+
 VOID WINAPI LogSystemInfo()
 {
 	WriteToLog(_T("SysInfo"), _T("Detecting Processor...\n"));
@@ -208,7 +210,102 @@ BOOL WINAPI LogOSDetect()
 BOOL WINAPI CheckSaintsRow2Integrity()
 {
 	HANDLE sr2Exe;
+	DWORD exeLength;
+	LPVOID* buffer;
+	DWORD totalBytesRead = 0;
+	DWORD bytesRead = 0;
+	DWORD crc;
 
-	sr2Exe = CreateFileW(TEXT("SR2_pc.exe"), GENERIC_WRITE, FILE_SHARE_READ, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+	Init_CRC32_Table();
+
+	sr2Exe = CreateFileW(TEXT("SR2_pc.exe"), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+	exeLength = GetFileSize(sr2Exe, NULL);
+
+	buffer = (LPVOID*)malloc(exeLength);
+	
+	while (totalBytesRead < exeLength)
+	{
+		if (!ReadFile(sr2Exe, buffer + totalBytesRead, exeLength - totalBytesRead, &bytesRead, NULL))
+		{
+			CloseHandle(sr2Exe);
+			return false;
+		}
+		totalBytesRead += bytesRead;
+	}
+	CloseHandle(sr2Exe);
+	
+	crc = Get_CRC((char*)buffer);
+	free(buffer);
+
+	if (crc == 0x3758E11B)
+	{
+		WriteToLog(_T("Powertools"), _T("Found Steam SR2_pc.exe, CRC32: 0x%08X\n"), crc);
+	}
+	else
+	{
+		WriteToLog(_T("Powertools"), _T("Unrecognised SR2_pc.exe found. CRC32: 0x%08X\n"), crc);
+		return false;
+	}
+
 	return false;
+}
+
+void Init_CRC32_Table() 
+{// Call this function only once to initialize the CRC table. 
+
+      // This is the official polynomial used by CRC-32 
+      // in PKZip, WinZip and Ethernet. 
+      ULONG ulPolynomial = 0x04c11db7; 
+
+      // 256 values representing ASCII character codes. 
+      for(int i = 0; i <= 0xFF; i++) 
+      { 
+            crc32_table[i]=Reflect(i, 8) << 24; 
+            for (int j = 0; j < 8; j++) 
+                  crc32_table[i] = (crc32_table[i] << 1) ^ (crc32_table[i] & (1 << 31) ? ulPolynomial : 0); 
+            crc32_table[i] = Reflect(crc32_table[i], 32); 
+      } 
+} 
+
+ULONG Reflect(ULONG ref, char ch) 
+{// Used only by Init_CRC32_Table(). 
+
+      ULONG value(0); 
+
+      // Swap bit 0 for bit 7 
+      // bit 1 for bit 6, etc. 
+      for(int i = 1; i < (ch + 1); i++) 
+      { 
+            if(ref & 1) 
+                  value |= 1 << (ch - i); 
+            ref >>= 1; 
+      } 
+      return value; 
+}
+
+int Get_CRC(char* text) 
+{// Pass a text string to this function and it will return the CRC. 
+
+      // Once the lookup table has been filled in by the two functions above, 
+      // this function creates all CRCs using only the lookup table. 
+
+      // Be sure to use unsigned variables, 
+      // because negative values introduce high bits 
+      // where zero bits are required. 
+
+      // Start out with all bits set high. 
+      ULONG  ulCRC(0xffffffff); 
+      int len; 
+      unsigned char* buffer; 
+
+      // Get the length. 
+      len = strlen(text); 
+      // Save the text in the buffer. 
+      buffer = (unsigned char*)text; 
+      // Perform the algorithm on each character 
+      // in the string, using the lookup table values. 
+      while(len--) 
+            ulCRC = (ulCRC >> 8) ^ crc32_table[(ulCRC & 0xFF) ^ *buffer++]; 
+      // Exclusive OR the result with the beginning value. 
+      return ulCRC ^ 0xffffffff; 
 }
