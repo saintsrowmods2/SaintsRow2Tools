@@ -51,6 +51,13 @@ BOOL APIENTRY DllMain(HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserv
 
 			LogSystemInfo();
 
+			WriteToLog(_T("SysInfo"), _T("Checking for known Saints Row 2 executable...\n"));
+			if (!CheckSaintsRow2Integrity())
+			{
+				MessageBox(NULL, L"Powertools failed to start!\nUpload the Powertools.log file in your Saints Row 2 directory when you ask for help.", L"Powertools Error", MB_ICONERROR | MB_OK);
+				return false;
+			}
+
 			WriteToLog(_T("Powertools"), _T("Configuration state:\n"));
 			WriteToLog(_T("Powertools"), _T("[core]\n"));
 			WriteToLog(_T("Powertools"), _T("consolebuffer = %d\n"), hkg_consoleBuffer);
@@ -94,6 +101,14 @@ BOOL APIENTRY DllMain(HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserv
 				CloseHandle(hkg_logFile);
 			}
           break;
+
+		case DLL_THREAD_ATTACH:
+			//WriteToLog(_T("Saints Row 2"), _T("New thread."));
+		break;
+		
+		case DLL_THREAD_DETACH:
+			//WriteToLog(_T("Saints Row 2"), _T("Thread terminating."));
+		break;
     }
 
   return true;

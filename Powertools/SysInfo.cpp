@@ -34,14 +34,14 @@ BOOL WINAPI ProcessorDetect()
     *((int*)(CPUString+8)) = CPUInfo[2];
 
 	if (sizeof(TCHAR) == sizeof(char))
-		WriteToLog(_T("SysInfo"), _T("Current CPU manufacturer string: %s\n"), (TCHAR*)CPUString);
+		WriteToLog(_T("CPU Info"), _T("Current CPU manufacturer string: %s\n"), (TCHAR*)CPUString);
 	else
 	{
 		TCHAR* CPUStringW = NULL;
 		DWORD CPUStringLen = MultiByteToWideChar(CP_ACP, 0, CPUString, -1, NULL, 0);
 		CPUStringW = (TCHAR*)malloc(CPUStringLen * sizeof(TCHAR));
 		MultiByteToWideChar(CP_ACP, 0, CPUString, -1, (LPWSTR)CPUStringW, CPUStringLen);
-		WriteToLog(_T("SysInfo"), _T("Current CPU manufacturer string: %s\n"), (TCHAR*)CPUStringW);
+		WriteToLog(_T("CPU Info"), _T("Current CPU manufacturer string: %s\n"), (TCHAR*)CPUStringW);
 		free(CPUStringW);
 	}
 
@@ -56,22 +56,20 @@ BOOL WINAPI ProcessorDetect()
 		memcpy(CPUBrandString + 32, CPUInfo, sizeof(CPUInfo));
 
 		if (sizeof(TCHAR) == sizeof(char))
-			WriteToLog(_T("SysInfo"), _T("Current CPU Brand string: %s\n"), (TCHAR*)CPUBrandString);
+			WriteToLog(_T("CPU Info"), _T("Current CPU Brand string: %s\n"), (TCHAR*)CPUBrandString);
 		else
 		{
 			TCHAR* CPUStringW = NULL;
 			DWORD CPUStringLen = MultiByteToWideChar(CP_ACP, 0, CPUBrandString, -1, NULL, 0);
 			CPUStringW = (TCHAR*)malloc(CPUStringLen * sizeof(TCHAR));
 			MultiByteToWideChar(CP_ACP, 0, CPUBrandString, -1, (LPWSTR)CPUStringW, CPUStringLen);
-			WriteToLog(_T("SysInfo"), _T("Current CPU Brand string: %s\n"), (TCHAR*)CPUStringW);
+			WriteToLog(_T("CPU Info"), _T("Current CPU Brand string: %s\n"), (TCHAR*)CPUStringW);
 			free(CPUStringW);
 		}
-
-		return true;
 	}
 	else
 	{
-		WriteToLog(_T("SysInfo"), _T("Cannot get CPU Brand String."));
+		WriteToLog(_T("CPU Info"), _T("Cannot get CPU Brand String."));
 		return false;
 	}
 
@@ -85,14 +83,16 @@ BOOL WINAPI ProcessorDetect()
     // get CPU stats
     if (CallNtPowerInformation(ProcessorInformation, NULL, 0, &ppis[0], sizeof(PROCESSOR_POWER_INFORMATION) * ppis.size()) != ERROR_SUCCESS)
     {
-		WriteToLog(_T("SysInfo"), _T("Unable to get CPU information.\n"));
+		WriteToLog(_T("CPU Info"), _T("Unable to get CPU information.\n"));
         return false;
     }
 
 	for (PPIVector::iterator it = ppis.begin(); it != ppis.end(); ++it)
     {
-		WriteToLog(_T("SysInfo"), _T("stats for CPU %d: max: %d MHz, current: %d MHz\n"), it->Number, it->MaxMhz, it->CurrentMhz);
+		WriteToLog(_T("CPU Info"), _T("stats for CPU %d: max: %d MHz, current: %d MHz\n"), it->Number, it->MaxMhz, it->CurrentMhz);
     }
+
+	return true;
 }
 
 BOOL WINAPI LogOSDetect()
@@ -118,7 +118,7 @@ BOOL WINAPI LogOSDetect()
 	else
 		GetSystemInfo(&si);
 
-	WriteToLog(_T("SysInfo"), _T("OS information: PlatformId: %d, Version: %d.%d, Build: %d, Service Pack: %d.%d (%s), Suite Mask: 0x%08X, Processor Architecture: %s\n"),
+	WriteToLog(_T("OS Info"), _T("OS information: PlatformId: %d, Version: %d.%d, Build: %d, Service Pack: %d.%d (%s), Suite Mask: 0x%08X, Processor Architecture: %s\n"),
 		osvi.dwPlatformId, osvi.dwMajorVersion, osvi.dwMinorVersion, osvi.dwBuildNumber, osvi.wServicePackMajor, osvi.wServicePackMinor, osvi.szCSDVersion, osvi.wSuiteMask,
 		(si.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_IA64 ? _T("Itanium") : (si.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_AMD64 ? _T("x86_64") : _T("x86"))));
 
@@ -129,37 +129,37 @@ BOOL WINAPI LogOSDetect()
 			if (osvi.dwMinorVersion == 0)
 			{
 				if (osvi.wProductType == VER_NT_WORKSTATION)
-					WriteToLog(_T("SysInfo"), _T("OS is Windows 2000 Professional.\n"));
+					WriteToLog(_T("OS Info"), _T("OS is Windows 2000 Professional.\n"));
 				else if (osvi.wSuiteMask & VER_SUITE_DATACENTER)
-					WriteToLog(_T("SysInfo"), _T("OS is Windows 2000 Datacenter Server.\n"));
+					WriteToLog(_T("OS Info"), _T("OS is Windows 2000 Datacenter Server.\n"));
 				else if (osvi.wSuiteMask & VER_SUITE_ENTERPRISE)
-					WriteToLog(_T("SysInfo"), _T("OS is Windows 2000 Enterprise Server.\n"));
+					WriteToLog(_T("OS Info"), _T("OS is Windows 2000 Enterprise Server.\n"));
 				else
-					WriteToLog(_T("SysInfo"), _T("OS is Windows 2000 Server.\n"));
+					WriteToLog(_T("OS Info"), _T("OS is Windows 2000 Server.\n"));
 			}
 			else if (osvi.dwMinorVersion == 1)
 			{
 				if (osvi.wSuiteMask & VER_SUITE_PERSONAL)
-					WriteToLog(_T("SysInfo"), _T("OS is Windows XP Home.\n"));
+					WriteToLog(_T("OS Info"), _T("OS is Windows XP Home.\n"));
 				else
-					WriteToLog(_T("SysInfo"), _T("OS is Windows XP Professional.\n"));
+					WriteToLog(_T("OS Info"), _T("OS is Windows XP Professional.\n"));
 			}
 			else if (osvi.dwMinorVersion == 2)
 			{
 				if (osvi.wProductType == VER_NT_WORKSTATION && si.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_AMD64)
-					WriteToLog(_T("SysInfo"), _T("OS is Windows XP Professional x64 Edition.\n"));
+					WriteToLog(_T("OS Info"), _T("OS is Windows XP Professional x64 Edition.\n"));
 				else if (GetSystemMetrics(SM_SERVERR2))
-					WriteToLog(_T("SysInfo"), _T("OS is Windows Server 2003 R2.\n"));
+					WriteToLog(_T("OS Info"), _T("OS is Windows Server 2003 R2.\n"));
 				else if (osvi.wSuiteMask & VER_SUITE_STORAGE_SERVER)
-					WriteToLog(_T("SysInfo"), _T("OS is Windows Storage Server 2003.\n"));
+					WriteToLog(_T("OS Info"), _T("OS is Windows Storage Server 2003.\n"));
 				else if (osvi.wSuiteMask & VER_SUITE_WH_SERVER)
-					WriteToLog(_T("SysInfo"), _T("OS is Windows Home Server.\n"));
+					WriteToLog(_T("OS Info"), _T("OS is Windows Home Server.\n"));
 				else
-					WriteToLog(_T("SysInfo"), _T("OS is Windows Server 2003.\n"));
+					WriteToLog(_T("OS Info"), _T("OS is Windows Server 2003.\n"));
 			}
 			else
 			{
-				WriteToLog(_T("SysInfo"), _T("Unknown minor version.\n"));
+				WriteToLog(_T("OS Info"), _T("Unknown minor version.\n"));
 				return false;
 			}
 		}
@@ -168,39 +168,47 @@ BOOL WINAPI LogOSDetect()
 			if (osvi.dwMinorVersion == 0)
 			{
 				if (osvi.wProductType == VER_NT_WORKSTATION)
-					WriteToLog(_T("SysInfo"), _T("OS is Windows Vista.\n"));
+					WriteToLog(_T("OS Info"), _T("OS is Windows Vista.\n"));
 				else
-					WriteToLog(_T("SysInfo"), _T("OS is Windows Server 2008.\n"));
+					WriteToLog(_T("OS Info"), _T("OS is Windows Server 2008.\n"));
 			}
 			else if (osvi.dwMinorVersion == 1)
 			{
 				if (osvi.wProductType == VER_NT_WORKSTATION)
-					WriteToLog(_T("SysInfo"), _T("OS is Windows 7.\n"));
+					WriteToLog(_T("OS Info"), _T("OS is Windows 7.\n"));
 				else
-					WriteToLog(_T("SysInfo"), _T("OS is Windows Server 2008 R2.\n"));
+					WriteToLog(_T("OS Info"), _T("OS is Windows Server 2008 R2.\n"));
 			}
 			else
 			{
-				WriteToLog(_T("SysInfo"), _T("Unknown minor version.\n"));
+				WriteToLog(_T("OS Info"), _T("Unknown minor version.\n"));
 				return false;
 			}
 		}
 		else if (osvi.dwMajorVersion < 5)
 		{
-			WriteToLog(_T("SysInfo"), _T("Unknown (old?) Windows version.\n"));
+			WriteToLog(_T("OS Info"), _T("Unknown (old?) Windows version.\n"));
 			return false;
 		}
 		else if (osvi.dwMajorVersion > 6)
 		{
-			WriteToLog(_T("SysInfo"), _T("Unknown (future?) Windows version.\n"));
+			WriteToLog(_T("OS Info"), _T("Unknown (future?) Windows version.\n"));
 			return false;
 		}
 	}
 	else
 	{
-		WriteToLog(_T("SysInfo"), _T("OS platform is unknown.\n"), osvi.dwPlatformId);
+		WriteToLog(_T("OS Info"), _T("OS platform is unknown.\n"), osvi.dwPlatformId);
 		return false;
 	}
 
 	return true;
+}
+
+BOOL WINAPI CheckSaintsRow2Integrity()
+{
+	HANDLE sr2Exe;
+
+	sr2Exe = CreateFileW(TEXT("SR2_pc.exe"), GENERIC_WRITE, FILE_SHARE_READ, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+	return false;
 }

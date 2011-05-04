@@ -21,3 +21,4 @@ typedef std::vector<PROCESSOR_POWER_INFORMATION> PPIVector;
 extern BOOL WINAPI ProcessorDetect();
 extern BOOL WINAPI LogOSDetect();
 extern VOID WINAPI LogSystemInfo();
+extern BOOL WINAPI CheckSaintsRow2Integrity();
