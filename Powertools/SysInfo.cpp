@@ -25,7 +25,7 @@ VOID WINAPI LogSystemInfo()
 BOOL WINAPI ProcessorDetect()
 {
 	char CPUString[0x20];
-	char CPUBrandString[0x20];
+	char CPUBrandString[0x40];
 	int CPUInfo[4] = {-1};
 	unsigned int nIds = 0;
 	__cpuid(CPUInfo, 0);
@@ -49,6 +49,7 @@ BOOL WINAPI ProcessorDetect()
 	}
 
 	__cpuid(CPUInfo, 0x80000000);
+	memset(CPUBrandString, 0, sizeof(CPUBrandString));
 	if (CPUInfo[0] >= 0x80000004)
 	{
 		__cpuid(CPUInfo, 0x80000002);
