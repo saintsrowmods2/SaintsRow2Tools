@@ -120,6 +120,8 @@ VOID WINAPIV HookedCutsceneBegin()
     hkg_timescale = 1.0f;
     hkg_isCutscenePlaying = true;
 
+	WriteToLog(_T("Cutscene"), _T("Cutscene started."));
+
     RealCutsceneBegin();
 }
 
@@ -127,6 +129,8 @@ VOID WINAPIV HookedCutsceneEnd()
 {
     hkg_timescale = hkg_origTimescale;
     hkg_isCutscenePlaying = false;
+
+	WriteToLog(_T("Cutscene"), _T("Cutscene finished."));
 
     RealCutsceneEnd();
 }

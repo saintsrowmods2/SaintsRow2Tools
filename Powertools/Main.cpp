@@ -37,6 +37,9 @@ BOOL APIENTRY DllMain(HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserv
         case DLL_PROCESS_ATTACH:
             DisableThreadLibraryCalls(GetModuleHandle(NULL));
 
+			hkg_logFile = CreateFileW(TEXT("Powertools.log"), GENERIC_WRITE, FILE_SHARE_READ, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+			WriteToLog(_T("Powertools"), _T("Opened log file.\n"));
+
             ReadConfiguration();
 
 			if (hkg_consoleBuffer > 0)
@@ -46,9 +49,6 @@ BOOL APIENTRY DllMain(HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserv
 
 			printf("Saints Row 2 Powertools\n");
 			printf("\n");
-
-			hkg_logFile = CreateFileW(TEXT("Powertools.log"), GENERIC_WRITE, FILE_SHARE_READ, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
-			WriteToLog(_T("Powertools"), _T("Opened log file.\n"));
 
 			LogSystemInfo();
 
@@ -60,9 +60,14 @@ BOOL APIENTRY DllMain(HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserv
 				return false;
 			}
 
-			WriteToLog(_T("Powertools"), _T("Configuration state:\n"));
-			WriteToLog(_T("Powertools"), _T("[core]\nconsolebuffer = %d\nloglua = %s\nosd = %s\n[speed]\nfreqtarget = %d\ntimescale = %f\n"),
-				hkg_consoleBuffer, hkg_logLua ? _T("true") : _T("false"), hkg_osdEnabled ? _T("true") : _T("false"), hkg_freqTarget, hkg_timescale);
+			WriteToLog(_T("Configuration"), _T("Configuration state:\n"));
+			WriteToLog(_T("Configuration"), _T("[core]\n"));
+			WriteToLog(_T("Configuration"), _T("consolebuffer = %d\n"), hkg_consoleBuffer);
+			WriteToLog(_T("Configuration"), _T("loglua = %s\n"), hkg_logLua ? _T("true") : _T("false"));
+			WriteToLog(_T("Configuration"), _T("osd = %s\n"), hkg_osdEnabled ? _T("true") : _T("false"));
+			WriteToLog(_T("Configuration"), _T("[speed]\n"));
+			WriteToLog(_T("Configuration"), _T("freqtarget = %d\n"), hkg_freqTarget);
+			WriteToLog(_T("Configuration"), _T("timescale = %f\n"), hkg_timescale);
 
 			LARGE_INTEGER currentFreq;
 			QueryPerformanceFrequency(&currentFreq);
@@ -100,11 +105,11 @@ BOOL APIENTRY DllMain(HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserv
           break;
 
 		case DLL_THREAD_ATTACH:
-			//WriteToLog(_T("Saints Row 2"), _T("New thread."));
+			//WriteToLog(_T("Saints Row 2"), _T("New thread.\n"));
 		break;
 		
 		case DLL_THREAD_DETACH:
-			//WriteToLog(_T("Saints Row 2"), _T("Thread terminating."));
+			//WriteToLog(_T("Saints Row 2"), _T("Thread terminating.\n"));
 		break;
     }
 
@@ -250,6 +255,7 @@ BOOL WINAPI InstallHooks()
 	switch (SR2_EXE_CRC)
 	{
 		case CRC_STEAM_VER_1_2:
+			WriteToLog(_T("InstallHooks"), _T("Using Steam 1.2 hooks.\n"));
 			return InstallHooks_Steam_1_2();
 		break;
 
@@ -261,46 +267,45 @@ BOOL WINAPI InstallHooks()
 
 BOOL WINAPI InstallHooks_Steam_1_2()
 {
-	WriteToLog(_T("Powertools"), _T("Using Steam 1.2 hooks.\n"));
     BOOL result = false;
     *hkg_tableSize++;
 
-	WriteToLog(_T("Powertools"), _T("Installing Direct3DCreate9 hook.\n"));
+	WriteToLog(_T("InstallHooks Steam 1.2"), _T("Installing Direct3DCreate9 hook.\n"));
     result = HookFunctionByName((FARPROC*)&RealDirect3DCreate9,
         (FARPROC)HookedDirect3DCreate9, "d3d9", "Direct3DCreate9");
 
     if(result == false)
         return false;
 
-	WriteToLog(_T("Powertools"), _T("Installing QueryPerformanceCounter hook.\n"));
+	WriteToLog(_T("InstallHooks Steam 1.2"), _T("Installing QueryPerformanceCounter hook.\n"));
     result = HookFunctionByName((FARPROC*)&RealQueryPerformanceCounter,
         (FARPROC)HookedQueryPerformanceCounter, "kernel32", "QueryPerformanceCounter");
 
     if(result == false)
         return false;
 
-	WriteToLog(_T("Powertools"), _T("Installing CutsceneBegin hook.\n"));
+	WriteToLog(_T("InstallHooks Steam 1.2"), _T("Installing CutsceneBegin hook.\n"));
     result = HookFunctionByOffset((FARPROC*)&RealCutsceneBegin,
         (FARPROC)HookedCutsceneBegin, _T("sr2_pc.exe"), 0x2bfb50);
 
     if(result == false)
         return false;
     
-	WriteToLog(_T("Powertools"), _T("Installing CutsceneEnd hook.\n"));
+	WriteToLog(_T("InstallHooks Steam 1.2"), _T("Installing CutsceneEnd hook.\n"));
     result = HookFunctionByOffset((FARPROC*)&RealCutsceneEnd,
         (FARPROC)HookedCutsceneEnd, _T("sr2_pc.exe"), 0x2c44c0);
 
     if(result == false)
         return false;
     
-	WriteToLog(_T("Powertools"), _T("Installing DebugPrint hook.\n"));
+	WriteToLog(_T("InstallHooks Steam 1.2"), _T("Installing DebugPrint hook.\n"));
     result = HookFunctionByOffset((FARPROC*)&RealDebugPrint,
         (FARPROC)HookedDebugPrint, _T("sr2_pc.exe"), 0x974ba0);
 
     if(result == false)
         return false;
 
-	WriteToLog(_T("Powertools"), _T("Installing LuaPushString hook.\n"));
+	WriteToLog(_T("InstallHooks Steam 1.2"), _T("Installing LuaPushString hook.\n"));
     result = HookFunctionByOffset((FARPROC*)&RealLuaPushString,
         (FARPROC)HookedLuaPushString, _T("sr2_pc.exe"), 0x8dcaf0);
     
